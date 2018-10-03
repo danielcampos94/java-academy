@@ -1,0 +1,22 @@
+package br.com.neolog.welcomekit.services;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import br.com.neolog.welcomekit.models.ProductCategory;
+import br.com.neolog.welcomekit.repository.ProductCategoryRepository;
+
+@Service
+public class ProductCategoryService {
+
+	@Autowired
+	ProductCategoryRepository categoryRepository;
+	
+	public ProductCategory save(ProductCategory category){
+		return categoryRepository.save(category);
+	}
+	
+	
+	
+}
+

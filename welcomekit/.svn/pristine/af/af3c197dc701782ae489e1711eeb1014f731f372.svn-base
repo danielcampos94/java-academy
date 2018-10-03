@@ -1,0 +1,41 @@
+package br.com.neolog.welcomekit.models;
+
+import static java.util.Objects.requireNonNull;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.validation.constraints.NotNull;
+
+public class ProductCategory {
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator= "productCategory_sequence")
+	@SequenceGenerator(name="productCategory_sequence", initialValue = 1)
+	private Integer id;
+	
+	@Column(unique = true) @NotNull
+	private int code;
+	
+	@Column(unique = true) @NotNull
+	private String name;
+	
+	public ProductCategory(final int code, final String name) {
+		this.code = code;
+		this.name = requireNonNull(name);
+	}
+	
+	public int getId() {
+		return id;
+	}
+	public int getCode() {
+		return code;
+	}
+	public String getName() {
+		return name;
+	}
+	
+	
+}

@@ -1,0 +1,18 @@
+package br.com.neolog.welcomekit.services;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import br.com.neolog.welcomekit.models.Stock;
+import br.com.neolog.welcomekit.repository.StockRepository;
+
+@Service
+public class StockService {
+
+	@Autowired
+	StockRepository stockRepository;
+	
+	public Stock save(final Stock stock){
+		return stockRepository.save(stock);
+	}
+}

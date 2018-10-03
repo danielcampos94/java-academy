@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<changeSet id="1" author="daniel.campos">
+		<createTable tableName="product">
+			<column name="id" type="int">
+				<constraints primaryKey="true" primaryKeyName="pk_product_id" deleteCascade="true"/>
+			</column>
+			<column name="code" type="int">
+				<constraints nullable="false" unique="true" />
+			</column>
+			<column name="name" type="varchar(30)">
+				<constraints nullable="false" />
+			</column>
+			<column name="price" type="double" />
+			<column name="description" type="varchar(100)">
+				<constraints nullable="true" />
+			</column>
+			<column name="weight" type="double" />
+			<column name="category" type="int" >
+				<constraints nullable="false" checkConstraint="fk_product_category" />
+			</column>
+		</createTable>
+		
+		<createTable tableName="product_category">
+			<column name="id" type="int">
+				<constraints primaryKey="true" primaryKeyName="pk_product_category_id"/>
+			</column>
+			<column name="code" type="int">
+				<constraints nullable="false" unique="true" />
+			</column>
+			<column name="name" type="varchar(30)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<createTable tableName="stock">
+			<column name="id" type="int">
+				<constraints primaryKey="true" primaryKeyName="pk_stock_id"/>
+			</column>
+			<column name="product" type="int">
+				<constraints nullable="false" checkConstraint="fk_stock_product"/>
+			</column>
+			<column name="quantity" type="int"/>
+			
+		</createTable>
+		
+		<createSequence sequenceName="product_sequence" startValue="1" incrementBy="1"/>
+		<createSequence sequenceName="product_category_sequence" startValue="1" incrementBy="1"/>
+		<createSequence sequenceName="stock_sequence" startValue="1" incrementBy="1"/>
+				
+		<addForeignKeyConstraint baseColumnNames="category"
+            baseTableName="product"
+            constraintName="fk_product_category"
+            referencedColumnNames="id"
+            referencedTableName="product_category"/>
+            
+		<addForeignKeyConstraint baseColumnNames="product"
+            baseTableName="stock"
+            constraintName="fk_stock_product"
+            referencedColumnNames="id"
+            referencedTableName="product"/>
+            
+		
+	</changeSet>
+	
+	<changeSet id="2" author="daniel.campos" context="test">
+		
+		<insert tableName="product_category">
+			<column name="id" valueSequenceNext="product_category_sequence"/>
+			<column name="code" value="10"/>
+			<column name="name" value="Eletronicos"/>
+		</insert>
+		
+		<insert tableName="product_category">
+			<column name="id" valueSequenceNext="product_category_sequence"/>
+			<column name="code" value="11"/>
+			<column name="name" value="Acessorios para celular"/>
+		</insert>
+		
+		<insert tableName="product" >
+			<column name="id" valueSequenceNext="product_sequence"/>
+			<column name="code" value="10"/>
+			<column name="name" value="TV"/>
+            <column name="price" value="2000.0"/>
+            <column name="description" value="SMART TV 4K"/>
+            <column name="weight" value="30.0"/>
+            <column name="category" value="1"/>
+		</insert>
+		
+		<insert tableName="product" >
+			<column name="id" valueSequenceNext="product_sequence"/>
+			<column name="code" value="11"/>
+			<column name="name" value="Celular"/>
+            <column name="price" value="4000.0"/>
+            <column name="description" value="IphoneX"/>
+            <column name="weight" value="0.8"/>
+            <column name="category" value="1"/>
+		</insert>
+		
+		<insert tableName="stock">
+			<column name="id" valueSequenceNext="stock_sequence"/>
+			<column name="product" value="2"/>
+			<column name="quantity" value="9000"/>
+		</insert>
+		
+		<insert tableName="stock">
+			<column name="id" valueSequenceNext="stock_sequence"/>
+			<column name="product" value="1"/>
+			<column name="quantity" value="15000"/>
+		</insert>
+	</changeSet>
+
+</databaseChangeLog>

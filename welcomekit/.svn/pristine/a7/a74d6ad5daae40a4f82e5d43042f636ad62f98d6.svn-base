@@ -1,0 +1,45 @@
+package br.com.neolog.welcomekit.services;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.stereotype.Service;
+
+import br.com.neolog.welcomekit.models.Product;
+import br.com.neolog.welcomekit.repository.ProductRepository;
+
+@Service
+public class ProductService {
+
+	@Autowired
+	private ProductRepository productRepository;
+
+	public List<Product> findAllProducts() {
+		return productRepository.findAll();
+	}
+	
+
+	public Optional<Product> findById(final Integer id) {
+		return productRepository.findById(id);
+	}
+
+	public Product save(Product product) {
+		return productRepository.saveAndFlush(product);
+	}
+	
+	public void delete(Integer id){
+		productRepository.deleteById(id);
+	}
+	
+	public Product updateProduct(Product product) {
+		return productRepository.save(product);
+	}
+	
+	public Product findByName(final String name){
+		return productRepository.findByName(name);
+	}
+	
+	
+}

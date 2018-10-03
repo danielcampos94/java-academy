@@ -1,0 +1,21 @@
+package br.com.neolog.welcomekit.services;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+
+import org.apache.http.HttpStatus;
+import org.junit.Test;
+
+import io.restassured.http.ContentType;
+
+public class ProductIntegrationTest extends AbstractIntegrationTest {
+
+	@Test
+	public void shouldReturnHello(){
+		given().contentType( ContentType.JSON )
+        .when().get("/message" )
+        .then().log().everything()
+        .assertThat().statusCode( HttpStatus.SC_OK )
+        .and().body(equalTo("Hello!!"));
+	}
+}
