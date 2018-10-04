@@ -5,7 +5,7 @@
 
 	<changeSet id="1" author="daniel.campos">
 		<createTable tableName="product">
-			<column name="id" type="int">
+			<column name="id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" primaryKeyName="pk_product_id" deleteCascade="true"/>
 			</column>
 			<column name="code" type="int">
@@ -25,7 +25,7 @@
 		</createTable>
 		
 		<createTable tableName="product_category">
-			<column name="id" type="int">
+			<column name="id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" primaryKeyName="pk_product_category_id"/>
 			</column>
 			<column name="code" type="int">
@@ -37,7 +37,7 @@
 		</createTable>
 
 		<createTable tableName="stock">
-			<column name="id" type="int">
+			<column name="id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" primaryKeyName="pk_stock_id"/>
 			</column>
 			<column name="product" type="int">
@@ -60,6 +60,7 @@
 		<addForeignKeyConstraint baseColumnNames="product"
             baseTableName="stock"
             constraintName="fk_stock_product"
+            onDelete="CASCADE"
             referencedColumnNames="id"
             referencedTableName="product"/>
             

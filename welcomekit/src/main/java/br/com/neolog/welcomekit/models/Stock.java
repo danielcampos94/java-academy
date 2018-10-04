@@ -27,7 +27,7 @@ public class Stock {
 
 	@NotNull
 	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "product")
+	@JoinColumn(name = "product", unique = true)
 	private Product product;
 
 	@Column

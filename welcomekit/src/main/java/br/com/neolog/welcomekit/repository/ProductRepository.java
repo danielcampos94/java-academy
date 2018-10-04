@@ -6,8 +6,8 @@ import br.com.neolog.welcomekit.models.Product;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
-	Product findByCode(final int code);
+	Product findByCode(final Integer code);
 	Product findByName(final String name);
-	
+	boolean existsByCode(final Integer code);
 }
 

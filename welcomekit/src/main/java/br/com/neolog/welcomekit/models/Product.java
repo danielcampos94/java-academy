@@ -26,15 +26,15 @@ public class Product {
 	private Integer id;
 
 	@Column(unique = true)
-	@NotNull
-	private int code;
+	@NotNull(message = "this field is not null")
+	private Integer code;
 
 	@Column
-	@NotNull
+	@NotNull(message = "this field is not null")
 	private String name;
 
 	@Column
-	@NotNull
+	@NotNull(message = "this field is not null")
 	private double price;
 
 	@Column
@@ -43,7 +43,7 @@ public class Product {
 	@Column
 	private Double weight;
 	
-	@NotNull
+	@NotNull(message = "this field is not null")
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "category")
 	private ProductCategory category;
@@ -52,11 +52,11 @@ public class Product {
 	public Product() {
 	}
 	
-	public Product(final Integer id, final int code, final String name, final double price, final String descripition, final Double weight,
+	public Product(final Integer id, final Integer code, final String name, final double price, final String descripition, final Double weight,
 			final ProductCategory category) {
 		
 		this.id = id;
-		this.code = code;
+		this.code = requireNonNull(code);
 		this.name = requireNonNull(name);
 		this.price = price;
 		this.description = descripition;
@@ -64,10 +64,10 @@ public class Product {
 		this.weight = requireNonNull(weight);
 	}
 	
-	public Product(final int code, final String name, final double price, final String descripition, final Double weight,
+	public Product(final Integer code, final String name, final double price, final String descripition, final Double weight,
 			final ProductCategory category) {
 
-		this.code = code;
+		this.code = requireNonNull(code);
 		this.name = requireNonNull(name);
 		this.price = price;
 		this.description = descripition;
@@ -79,7 +79,7 @@ public class Product {
 		return id;
 	}
 
-	public int getCode() {
+	public Integer getCode() {
 		return code;
 	}
 

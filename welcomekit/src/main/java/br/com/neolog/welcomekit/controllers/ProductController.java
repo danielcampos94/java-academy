@@ -3,6 +3,8 @@ package br.com.neolog.welcomekit.controllers;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,6 +31,9 @@ public class ProductController {
 	
 	@PostMapping("/add")
 	public ResponseEntity<Integer> saveProduct(@RequestBody final Product product) {
+		if(productService.hasProductByCode(product.getCode())){
+			throw new IllegalArgumentException("Duplicate Code");
+		}
 		final Integer productId = productService.save(product);
 		return new ResponseEntity<Integer>(productId, HttpStatus.CREATED);
 	}
@@ -50,7 +55,7 @@ public class ProductController {
 	}
 
 	@PutMapping("/update")
-	public ResponseEntity<Product> updateProduct(@RequestBody final Product product) {
+	public ResponseEntity<Product> updateProduct(@RequestBody @Valid final Product product) {
 		productService.updateProduct(product);
 		return new ResponseEntity<Product>(HttpStatus.OK);
 	}
@@ -58,5 +63,10 @@ public class ProductController {
 	@GetMapping("/findName/{name}")
 	public Product findProductByName(@PathVariable("name") final String name){
 		return productService.findByName(name);
+	}
+	
+	@GetMapping("/findCode/{code}")
+	public Product findProductByCode(@PathVariable("code") final Integer code){
+		return productService.findByCode(code);
 	}
 }
