@@ -27,24 +27,24 @@ public class ProductCategoryController {
 	@Autowired
 	ProductCategoryService categoryService;
 
-	@PostMapping("/add")
+	@PostMapping("/save")
 	public ResponseEntity<ProductCategory> saveCategory(@RequestBody final ProductCategory category) {
 		categoryService.save(category);
 		return new ResponseEntity<ProductCategory>(HttpStatus.CREATED);
 	}
 	
-	@DeleteMapping("/drop/{id}")
+	@DeleteMapping("/remove/{id}")
 	public ResponseEntity<ProductCategory> deleteCategory(@PathVariable("id") final Integer id) {
 		categoryService.delete(id);
 		return new ResponseEntity<ProductCategory>(HttpStatus.OK);
 	}
 	
-	@GetMapping("/findId/{id}")
+	@GetMapping("/searchId/{id}")
 	public Optional<ProductCategory> findCategoryById(@PathVariable("id") final Integer id) {
 		return categoryService.findById(id);
 	}
 	
-	@GetMapping("/all")
+	@GetMapping("/searchAll")
 	public List<ProductCategory> findAllCategories() {
 		return categoryService.findAll();
 	}
@@ -55,7 +55,7 @@ public class ProductCategoryController {
 		return new ResponseEntity<ProductCategory>(HttpStatus.OK);
 	}
 	
-	@GetMapping("/findCode/{code}")
+	@GetMapping("/searchCode/{code}")
 	public ProductCategory findCategoryByCode(@PathVariable("code") final int code){
 		return categoryService.findByCode(code);
 	}

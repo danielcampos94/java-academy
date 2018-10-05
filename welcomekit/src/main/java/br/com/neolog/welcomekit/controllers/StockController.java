@@ -1,5 +1,7 @@
 package br.com.neolog.welcomekit.controllers;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -7,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,17 +24,29 @@ public class StockController {
 	@Autowired
 	StockService stockService;
 	
-	@PostMapping("/add")
-	public ResponseEntity<Integer> save(@RequestBody final Stock stock) {
-		final Integer stockId = stockService.save(stock);
-		return new ResponseEntity<Integer>(stockId, HttpStatus.CREATED);
+	
+	@PostMapping("/save")
+	public ResponseEntity<String> save(@RequestBody @Valid final Stock stock) {
+		final int stockQuantity = stockService.save(stock);
+		return new ResponseEntity<String>("Total amount: " + stockQuantity, HttpStatus.CREATED);
 	}
 	
 	
-	@DeleteMapping("drop/{id}")
+	@DeleteMapping("remove/{id}")
 	public ResponseEntity<Integer> deleteProduct(@PathVariable("id") final Integer id) {
 		final Integer stockId = stockService.delete(id);
 		return new ResponseEntity<Integer>(stockId, HttpStatus.OK);
 	}
 	
+	@PutMapping("decrease/{code}/{quantity}")
+	public ResponseEntity<Stock> decreaseStockProduct(@PathVariable("code") final int code, @PathVariable("quantity") final int quantity) {
+		final Stock stock = stockService.decreaseStock(code, quantity);
+		return new ResponseEntity<Stock>(stock, HttpStatus.OK);
+	}
+	
+	@PutMapping("increase/{codeProduct}/{quantity}")
+	public ResponseEntity<Stock> increaseStockProduct(@PathVariable("codeProduct") final int code, @PathVariable("quantity") final int quantity) {
+		final Stock stock = stockService.increaseStock(code, quantity);
+		return new ResponseEntity<Stock>(stock, HttpStatus.OK);
+	}
 }

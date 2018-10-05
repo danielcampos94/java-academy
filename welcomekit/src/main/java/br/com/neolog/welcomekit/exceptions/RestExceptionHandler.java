@@ -21,15 +21,6 @@ public class RestExceptionHandler {
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-//	@ExceptionHandler(CategoryNotFoundException.class)
-//	public final ResponseEntity<ErrorDetails> handleCategoryNotFoundException(final CategoryNotFoundException e,
-//			final WebRequest request) {
-//		final ErrorDetails error = new ErrorDetails(new Date(), HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.value(),
-//				e.getClass().getName(), e.getMessage(), request.getDescription(false));
-//		LoggerMaster.warning(error.toString());
-//		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-//	}
-
 	private String bindingResultToString(final MethodArgumentNotValidException e) {
 
 		final StringBuilder stringBuilder = new StringBuilder("Validation failed. Error(s) details: ");

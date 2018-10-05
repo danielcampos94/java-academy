@@ -1,8 +1,11 @@
 package br.com.neolog.welcomekit.services;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.neolog.welcomekit.exceptions.stock.ProductNotExistsException;
+import br.com.neolog.welcomekit.models.Product;
 import br.com.neolog.welcomekit.models.Stock;
 import br.com.neolog.welcomekit.repository.StockRepository;
 
@@ -12,19 +15,52 @@ public class StockService {
 	@Autowired
 	StockRepository stockRepository;
 	
+	@Autowired
+	ProductService productService;
+	
+	
+	
 	public Integer save(final Stock stock){
-		return stockRepository.save(stock).getId();
+		if(!productService.hasProductById(stock.getProduct().getId())){
+			throw new ProductNotExistsException("This product not exists");
+		}
+		if(hasProductInStock(stock.getProduct())){
+			final Product product = productService.findById(stock.getProduct().getId());
+			final Stock newStock = increaseStock(product.getCode(), stock.getQuantity());
+			return newStock.getQuantity();
+		}
+		return stockRepository.save(stock).getQuantity();
 	}
 	
-	public Stock update(final Stock stock){
-		return stockRepository.save(stock);
+	public Stock increaseStock(final int productCode, final int quantity){
+		existsProduct(productCode);
+		final Product product = productService.findByCode(productCode);
+		final Stock stock = stockRepository.findByProduct(product);
+		return stockRepository.save(new Stock(stock.getId(), product, (stock.getQuantity() + quantity)));
 	}
+	
+	public Stock decreaseStock(final int productCode, final int quantity){
+		existsProduct(productCode);
+		Product product = productService.findByCode(productCode);
+		Stock stock = stockRepository.findByProduct(product);
+		return stockRepository.save(new Stock(stock.getId(), product, (stock.getQuantity() - quantity)));
+	}
+
 	
 	public Integer delete(final Integer id){
 		stockRepository.deleteById(id);
 		return id;
 	}
 	
+	public boolean hasProductInStock(final Product product){
+		return stockRepository.existsByProduct(product);
+	}
+	
+	private void existsProduct(final int productCode) {
+		if(!productService.existsProductByCode(productCode)){
+			throw new ProductNotExistsException("This product not exists");
+		}
+	}
 	
 	
 }

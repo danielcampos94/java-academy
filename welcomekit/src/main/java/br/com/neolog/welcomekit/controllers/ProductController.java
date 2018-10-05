@@ -1,7 +1,6 @@
 package br.com.neolog.welcomekit.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -29,11 +28,9 @@ public class ProductController {
 	@Autowired
 	ProductService productService;
 	
-	@PostMapping("/add")
+	@PostMapping("/save")
 	public ResponseEntity<Integer> saveProduct(@RequestBody final Product product) {
-		if(productService.hasProductByCode(product.getCode())){
-			throw new IllegalArgumentException("Duplicate Code");
-		}
+		
 		final Integer productId = productService.save(product);
 		return new ResponseEntity<Integer>(productId, HttpStatus.CREATED);
 	}
@@ -44,12 +41,12 @@ public class ProductController {
 		return new ResponseEntity<Integer>(productId, HttpStatus.OK);
 	}
 
-	@GetMapping("/findId/{id}")
-	public Optional<Product> findProductById(@PathVariable("id") final Integer id) {
+	@GetMapping("/searchId/{id}")
+	public Product findProductById(@PathVariable("id") final Integer id) {
 		return productService.findById(id);
 	}
 
-	@GetMapping("all")
+	@GetMapping("searchAll")
 	public List<Product> findAllProducts() {
 		return productService.findAllProducts();
 	}
@@ -57,15 +54,15 @@ public class ProductController {
 	@PutMapping("/update")
 	public ResponseEntity<Product> updateProduct(@RequestBody @Valid final Product product) {
 		productService.updateProduct(product);
-		return new ResponseEntity<Product>(HttpStatus.OK);
+		return new ResponseEntity<Product>(product, HttpStatus.OK);
 	}
 	
-	@GetMapping("/findName/{name}")
+	@GetMapping("/searchName/{name}")
 	public Product findProductByName(@PathVariable("name") final String name){
 		return productService.findByName(name);
 	}
 	
-	@GetMapping("/findCode/{code}")
+	@GetMapping("/searchCode/{code}")
 	public Product findProductByCode(@PathVariable("code") final Integer code){
 		return productService.findByCode(code);
 	}

@@ -25,13 +25,13 @@ public class Stock {
 	@SequenceGenerator(name = "stock_sequence", initialValue = 1, allocationSize = 1)
 	private Integer id;
 
-	@NotNull
+	@NotNull(message = "this field is not null")
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "product", unique = true)
 	private Product product;
 
 	@Column
-	@NotNull
+	@NotNull(message = "this field is not null")
 	private int quantity;
 	
 	public Stock() {

@@ -23,24 +23,24 @@ public class ProductCategory {
 	private Integer id;
 
 	@Column(unique = true)
-	@NotNull
-	private int code;
+	@NotNull(message = "this field is not null")
+	private Integer code;
 
 	@Column(unique = true)
-	@NotNull
+	@NotNull(message = "this field is not null")
 	private String name;
 
 	public ProductCategory() {
 	}
 
-	public ProductCategory(final int code, final String name) {
-		this.code = code;
+	public ProductCategory(final Integer code, final String name) {
+		this.code = requireNonNull(code);
 		this.name = requireNonNull(name);
 	}
 
-	public ProductCategory(final Integer id, final int code, final String name) {
+	public ProductCategory(final Integer id, final Integer code, final String name) {
 		this.id = id;
-		this.code = code;
+		this.code = requireNonNull(code);
 		this.name = requireNonNull(name);
 	}
 
@@ -48,7 +48,7 @@ public class ProductCategory {
 		return id;
 	}
 
-	public int getCode() {
+	public Integer getCode() {
 		return code;
 	}
 
