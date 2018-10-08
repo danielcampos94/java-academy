@@ -110,7 +110,7 @@
 		<insert tableName="stock">
 			<column name="id" valueSequenceNext="stock_sequence"/>
 			<column name="product" value="1"/>
-			<column name="quantity" value="15000"/>
+			<column name="quantity" value="0"/>
 		</insert>
 	</changeSet>
 

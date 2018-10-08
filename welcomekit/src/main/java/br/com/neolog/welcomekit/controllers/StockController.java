@@ -18,35 +18,45 @@ import br.com.neolog.welcomekit.models.Stock;
 import br.com.neolog.welcomekit.services.StockService;
 
 @RestController
-@RequestMapping(value = "/stock", produces = MediaType.APPLICATION_JSON_VALUE)
-public class StockController {
+@RequestMapping( value = "/stock", produces = MediaType.APPLICATION_JSON_VALUE )
+public class StockController
+{
 
-	@Autowired
-	StockService stockService;
-	
-	
-	@PostMapping("/save")
-	public ResponseEntity<String> save(@RequestBody @Valid final Stock stock) {
-		final int stockQuantity = stockService.save(stock);
-		return new ResponseEntity<String>("Total amount: " + stockQuantity, HttpStatus.CREATED);
-	}
-	
-	
-	@DeleteMapping("remove/{id}")
-	public ResponseEntity<Integer> deleteProduct(@PathVariable("id") final Integer id) {
-		final Integer stockId = stockService.delete(id);
-		return new ResponseEntity<Integer>(stockId, HttpStatus.OK);
-	}
-	
-	@PutMapping("decrease/{code}/{quantity}")
-	public ResponseEntity<Stock> decreaseStockProduct(@PathVariable("code") final int code, @PathVariable("quantity") final int quantity) {
-		final Stock stock = stockService.decreaseStock(code, quantity);
-		return new ResponseEntity<Stock>(stock, HttpStatus.OK);
-	}
-	
-	@PutMapping("increase/{codeProduct}/{quantity}")
-	public ResponseEntity<Stock> increaseStockProduct(@PathVariable("codeProduct") final int code, @PathVariable("quantity") final int quantity) {
-		final Stock stock = stockService.increaseStock(code, quantity);
-		return new ResponseEntity<Stock>(stock, HttpStatus.OK);
-	}
+    @Autowired
+    StockService stockService;
+
+    @PostMapping( "/save" )
+    public ResponseEntity<String> save(
+        @RequestBody @Valid final Stock stock )
+    {
+        final int stockQuantity = stockService.save( stock );
+        return new ResponseEntity<String>( "Total amount: " + stockQuantity, HttpStatus.CREATED );
+    }
+
+    @DeleteMapping( "remove/{id}" )
+    public ResponseEntity<Integer> deleteProduct(
+        @PathVariable( "id" ) final Integer id )
+    {
+        final Integer stockId = stockService.delete( id );
+        return new ResponseEntity<Integer>( stockId, HttpStatus.OK );
+    }
+
+    @PutMapping( "decrease/{code}/{quantity}" )
+    public ResponseEntity<Stock> decreaseStockProduct(
+        @PathVariable( "code" ) final int code,
+        @PathVariable( "quantity" ) final int quantity )
+    {
+        final Stock stock = stockService.decreaseStock( code, quantity );
+        return new ResponseEntity<Stock>( stock, HttpStatus.OK );
+    }
+
+    @PutMapping( "increase/{codeProduct}/{quantity}" )
+    public ResponseEntity<Stock> increaseStockProduct(
+        @PathVariable( "codeProduct" ) final int code,
+        @PathVariable( "quantity" ) final int quantity )
+    {
+        final Stock stock = stockService.increaseStock( code, quantity );
+        return new ResponseEntity<Stock>( stock, HttpStatus.OK );
+    }
+
 }

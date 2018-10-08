@@ -10,5 +10,6 @@ public interface StockRepository extends JpaRepository<Stock, Integer>{
 	boolean existsByProduct(final Product product);
 	
 	Stock findByProduct(final Product product);
+	Stock findByProductId(final int idProduct);
 	
 }

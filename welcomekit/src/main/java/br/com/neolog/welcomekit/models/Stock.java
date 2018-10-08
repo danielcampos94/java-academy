@@ -37,6 +37,7 @@ public class Stock {
 	public Stock() {
 		
 	}
+	
 
 	public Stock(final Product product, final int quantity) {
 		this.product = requireNonNull(product);
