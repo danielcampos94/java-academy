@@ -23,7 +23,7 @@ public class Product
 
     @Id
     @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "product_sequence" )
-    @SequenceGenerator( name = "product_sequence", initialValue = 1, allocationSize = 1 )
+    @SequenceGenerator( name = "product_sequence", sequenceName="product_sequence", initialValue = 1, allocationSize = 1 )
     private Integer id;
 
     @Column( unique = true )
@@ -36,13 +36,13 @@ public class Product
 
     @Column
     @NotNull( message = "this field is not null" )
-    private double price;
+    private long price;
 
     @Column
     private String description;
 
     @Column
-    private Double weight;
+    private Long weight;
 
     @NotNull( message = "this field is not null" )
     @ManyToOne( fetch = FetchType.EAGER )
@@ -54,12 +54,28 @@ public class Product
     }
 
     public Product(
+        final Integer code,
+        final String name,
+        final long price,
+        final String descripition,
+        final Long weight,
+        final ProductCategory category )
+    {
+        this.code = requireNonNull( code );
+        this.name = requireNonNull( name );
+        this.price = Math.round( price * 10 * 10 );
+        this.description = descripition;
+        this.category = requireNonNull( category );
+        this.weight = ( weight * 10 * 10 );
+    }
+    
+    public Product(
         final Integer id,
         final Integer code,
         final String name,
-        final double price,
+        final long price,
         final String descripition,
-        final Double weight,
+        final Long weight,
         final ProductCategory category )
     {
 
@@ -69,24 +85,7 @@ public class Product
         this.price = Math.round( price * 10 * 10 );
         this.description = descripition;
         this.category = requireNonNull( category );
-        this.weight = requireNonNull( weight );
-    }
-
-    public Product(
-        final Integer code,
-        final String name,
-        final double price,
-        final String descripition,
-        final Double weight,
-        final ProductCategory category )
-    {
-
-        this.code = requireNonNull( code );
-        this.name = requireNonNull( name );
-        this.price = Math.round( price * 10 * 10 );
-        this.description = descripition;
-        this.category = requireNonNull( category );
-        this.weight = requireNonNull( weight );
+        this.weight = ( weight * 10 * 10 );
     }
 
     public Integer getId()
@@ -121,8 +120,9 @@ public class Product
 
     public double getWeight()
     {
-        return weight;
+        return weight/100;
     }
+    
 
     @Override
     public String toString()

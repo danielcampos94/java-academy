@@ -1,0 +1,47 @@
+package br.com.neolog.welcomekit.services;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import br.com.neolog.welcomekit.exceptions.user.UserDuplicateEmailException;
+import br.com.neolog.welcomekit.exceptions.user.UserNotFoundException;
+import br.com.neolog.welcomekit.models.User;
+import br.com.neolog.welcomekit.repository.UserRepository;
+
+@Service
+public class UserService
+{
+    @Autowired
+    private UserRepository userRepository;
+
+    public Integer save(
+        final User user )
+    {
+        if( userRepository.existsByEmail( user.getEmail() ) ) {
+            throw new UserDuplicateEmailException( "EMAIL=" + user.getEmail() + " already exists" );
+        }
+        return userRepository.save( user ).getId();
+    }
+
+    public User update(
+        final User user )
+    {
+        if( ! userRepository.existsByEmail( user.getEmail() ) ) {
+            throw new UserNotFoundException( "EMAIL=" + user.getEmail() + " not exists" );
+        }
+        return userRepository.save( user );
+    }
+
+    public User findByEmail(
+        final String email )
+    {
+        return userRepository.findByEmail( email );
+    }
+
+    public List<User> findAll()
+    {
+        return userRepository.findAll();
+    }
+}

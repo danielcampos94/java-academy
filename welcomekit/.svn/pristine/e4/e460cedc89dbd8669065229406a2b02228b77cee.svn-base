@@ -1,0 +1,103 @@
+package br.com.neolog.welcomekit;
+
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.apache.http.HttpStatus;
+import org.hamcrest.Matchers;
+import org.junit.Test;
+
+import br.com.neolog.welcomekit.models.ProductCategory;
+import io.restassured.http.ContentType;
+
+public class CategoryIntegrationTest
+    extends
+        AbstractIntegrationTest
+{
+
+    @Test
+    public void shouldReturnStatusCreatedWhenAddNewCategory()
+    {
+        final String json = "{\"code\":50, \"name\":\"Livros\"}";
+
+        final Integer categoryId = given().contentType( ContentType.JSON ).body( json ).when().post( "/category/save" ).then().log().everything()
+            .assertThat().statusCode( HttpStatus.SC_CREATED ).and().extract().response().as( Integer.class );
+
+        assertThat( categoryId ).isEqualTo( 3 );
+    }
+
+    @Test
+    public void shouldReturnStatusOkAndVerifyUpdateCategory()
+    {
+        final String json = "{\"id\": 1, \"code\":80, \"name\":\"Eletrodomesticos\"}";
+
+        final ProductCategory category = given().contentType( ContentType.JSON ).body( json ).when().put( "/category/update" ).then().log().everything()
+            .assertThat().statusCode( HttpStatus.SC_OK ).and().extract().response().as( ProductCategory.class );
+
+        final ProductCategory updatedCategory = new ProductCategory(1,80,"Eletrodomesticos");
+        assertThat( category.equals( updatedCategory ) );
+    }
+
+    @Test
+    public void shouldReturnStatusOkWhenGetCategoryByCode()
+    {
+        given().contentType( ContentType.JSON ).when().get( "category/search/id/1" ).then().log().everything().assertThat()
+        .statusCode( HttpStatus.SC_OK ).and().body( "id", Matchers.equalTo( 1 ) );
+    }
+
+    @Test
+    public void shouldReturnStatusOkWhenDeleteCategoryByCode()
+    {
+        final Integer deletedCategoryId = given()
+            .contentType( ContentType.JSON )
+            .when().delete( "/category/remove/50" )
+            .then().log().everything()
+            .assertThat()
+            .statusCode( HttpStatus.SC_OK ).and()
+            .extract().response().as( Integer.class );
+
+        assertThat( deletedCategoryId ).isEqualTo( 50 );
+
+    }
+
+    @Test
+    public void shouldThrowCategoryNotFoundExceptionWhenUpdateCategory()
+    {
+        final String json = "{ \"id\": 30, \"code\":10, \"name\":\"Eletronicos\"}";
+        given()
+            .contentType( ContentType.JSON )
+            .body( json ).when().put( "/category/update" )
+            .then().log().everything()
+            .assertThat()
+            .statusCode( HttpStatus.SC_NOT_FOUND ).and()
+            .body( "message", Matchers.equalTo( "ID=30 not exists" ) );
+    }
+
+    @Test
+    public void shouldThrowCategoryDuplicateCodeExceptionWhenCreateProduct()
+    {
+        final String json = "{ \"code\":11, \"name\":\"Lazer\"}";
+        given()
+            .contentType( ContentType.JSON )
+            .body( json ).when().post( "/category/save" )
+            .then().log().everything()
+            .assertThat()
+            .statusCode( HttpStatus.SC_METHOD_NOT_ALLOWED ).and()
+            .body( "message", Matchers.equalTo( "CODE=11 already exists" ) );
+
+    }
+
+    @Test
+    public void shouldThrowCategoryDuplicateNameExceptionWhenCreateProduct()
+    {
+        final String json = "{ \"code\":654, \"name\":\"Eletronicos\"}";
+        given()
+            .contentType( ContentType.JSON )
+            .body( json ).when().post( "/category/save" )
+            .then().log().everything()
+            .assertThat()
+            .statusCode( HttpStatus.SC_METHOD_NOT_ALLOWED ).and()
+            .body( "message", Matchers.equalTo( "NAME=Eletronicos already exists" ) );
+
+    }
+}

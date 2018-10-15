@@ -20,7 +20,7 @@ public class ProductCategory
 
     @Id
     @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "product_category_sequence" )
-    @SequenceGenerator( name = "product_category_sequence", initialValue = 1, allocationSize = 1 )
+    @SequenceGenerator( name = "product_category_sequence", sequenceName="product_category_sequence", initialValue = 1, allocationSize = 1 )
     private Integer id;
 
     @Column( unique = true )
@@ -70,7 +70,7 @@ public class ProductCategory
 
     public String toString()
     {
-        return MoreObjects.toStringHelper( ProductCategory.class )
+        return MoreObjects.toStringHelper( this )
             .add( "id", id )
             .add( "code", code )
             .add( "name", name ).toString();

@@ -1,0 +1,167 @@
+package br.com.neolog.welcomekit;
+
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
+
+import org.apache.http.HttpStatus;
+import org.hamcrest.Matchers;
+import org.junit.Test;
+
+import br.com.neolog.welcomekit.models.Product;
+import br.com.neolog.welcomekit.models.ProductCategory;
+import io.restassured.http.ContentType;
+
+public class ProductIntegrationTest
+    extends
+        AbstractIntegrationTest
+{
+
+    @Test
+    public void shouldReturnStatusCreatedAndYourIdWhenSaveNewProduct()
+    {
+        final String json = "{\"code\": 20,	\"name\": \"TV\", \"price\": 2000.0,	\"description\":\"SMART TV 4K\", \"weight\":30.0 , \"category\":{ \"id\": 1, \"code\":10, \"name\":\"Eletronicos\"}}";
+
+        final Integer productId = given().contentType( ContentType.JSON ).body( json ).when().post( "/product/save" ).then().log()
+            .everything()
+            .assertThat().statusCode( HttpStatus.SC_CREATED ).and().extract().response().as( Integer.class );
+
+        assertThat( productId ).isEqualTo( 5 );
+    }
+
+    @Test
+    public void shouldReturnStatusOkWhenGetProductById()
+    {
+        given().contentType( ContentType.JSON ).when().get( "product/search/id/2" ).then().log().everything().assertThat()
+            .statusCode( HttpStatus.SC_OK ).and().body( "id", Matchers.equalTo( 2 ) );
+    }
+   
+    @Test
+    public void shouldReturnStatusOkWhenGetProductByName()
+    {
+        given().contentType( ContentType.JSON ).when().get( "product/search/name/TV" ).then().log().everything().assertThat()
+        .statusCode( HttpStatus.SC_OK ).and().body( "name", Matchers.equalTo( "TV" ) );
+    }
+    
+    @Test
+    public void shouldReturnStatusOkWhenGetProductByCode()
+    {
+        given().contentType( ContentType.JSON ).when().get( "product/search/code/500" ).then().log().everything().assertThat()
+        .statusCode( HttpStatus.SC_OK ).and().body( "code", Matchers.equalTo( 500 ) );
+    }
+
+    @Test
+    public void shouldThrowProductNotFoundExceptionWhenUpdateProduct()
+    {
+        final String json = "{\"id\": 30, \"code\": 20,	\"name\": \"TV\", \"price\": 2000.0,	\"description\":\"SMART TV 4K\", \"weight\":30.0 , \"category\":{ \"id\": 1, \"code\":10, \"name\":\"Eletronicos\"}}";
+        given()
+            .contentType( ContentType.JSON )
+            .body( json ).when().put( "/product/update" )
+            .then().log().everything()
+            .assertThat()
+            .statusCode( HttpStatus.SC_NOT_FOUND ).and()
+            .body( "message", Matchers.equalTo( "ID=30 not exists" ) );
+    }
+
+    @Test
+    public void shouldThrowProductDuplicateCodeExceptionWhenCreateProduct()
+    {
+        final String json = "{\"code\": 11,	\"name\": \"TV\", \"price\": 2000.0,	\"description\":\"SMART TV 4K\", \"weight\":30.0 , \"category\":{ \"id\": 1, \"code\":10, \"name\":\"Eletronicos\"}}";
+        given()
+            .contentType( ContentType.JSON )
+            .body( json ).when().post( "/product/save" )
+            .then().log().everything()
+            .assertThat()
+            .statusCode( HttpStatus.SC_METHOD_NOT_ALLOWED ).and()
+            .body( "message", Matchers.equalTo( "CODE=11 already exists" ) );
+
+    }
+
+    @Test
+    public void shouldReturnStatusOkAndYourIdWhenDeleteProduct()
+    {
+        final Integer deletedProductId = given()
+            .contentType( ContentType.JSON )
+            .when().delete( "/product/remove/1" )
+            .then().log().everything()
+            .assertThat()
+            .statusCode( HttpStatus.SC_OK ).and()
+            .extract().response().as( Integer.class );
+
+        assertThat( deletedProductId ).isEqualTo( 1 );
+
+    }
+
+    @Test
+    public void shouldThrowProductNotFoundExceptionWhenDeleteProduct()
+    {
+        given().contentType( ContentType.JSON )
+            .when().delete( "/product/remove/78" )
+            .then().log().everything()
+            .assertThat()
+            .statusCode( HttpStatus.SC_NOT_FOUND ).and()
+            .body( "message", Matchers.equalTo( "This product not exists" ) );
+    }
+
+    @Test
+    public void shouldThrowStockQuantityNotEmptyExceptionWhenDeleteProduct()
+    {
+        given().contentType( ContentType.JSON )
+            .when().delete( "/product/remove/2" )
+            .then().log().everything()
+            .assertThat()
+            .statusCode( HttpStatus.SC_METHOD_NOT_ALLOWED ).and()
+            .body( "message", Matchers.equalTo( "Stock of this product is not empty" ) );
+    }
+
+    @Test
+    public void shouldThrowMethodArgumentNotValidExceptionWhenSaveProductWithoutName()
+    {
+        final String json = "{\"code\": 95, \"price\": 2000.0,	\"description\":\"SMART TV 4K\", \"weight\":30.0 , \"category\":{ \"id\": 1, \"code\":10, \"name\":\"Eletronicos\"}}";
+        given().contentType( ContentType.JSON )
+            .body( json ).when().post( "/product/save" )
+            .then().log().everything().assertThat()
+            .statusCode( HttpStatus.SC_BAD_REQUEST )
+            .and().body( "message", Matchers.equalTo(
+                "Validation failed. Error(s) details: [NotNull.product.name: this field is not null] " ) );
+    }
+
+    @Test
+    public void shouldReturnStatusOkAndVerifyUpdateProduct()
+    {
+        final String json = "{\"id\": 2, \"code\": 5664,   \"name\": \"TV\", \"price\": 20000,    \"description\":\"SMART TV 4K\", \"weight\":30.0 , \"category\":{ \"id\": 1, \"code\":10, \"name\":\"Eletronicos\"}}";
+
+        final Product product = given().contentType( ContentType.JSON ).body( json ).when().put( "/product/update" ).then().log()
+            .everything()
+            .assertThat().statusCode( HttpStatus.SC_OK ).and().extract().response().as( Product.class );
+
+        final Product updatedProduct = new Product( 2, 5664, "TV", 2, "SMART TV 4K", 30.0, new ProductCategory( 1, 10, "Eletronicos" ) );
+        assertThat( product.equals( updatedProduct ) );
+    }
+
+    @Test
+    public void shouldReturnStatusOkAndNotNullWhenFindProductByCategory()
+    {
+        final List<Product> list = given().contentType( ContentType.JSON )
+        .when().get( "/product/search/category/1" )
+        .then().log().everything().assertThat()
+        .statusCode( HttpStatus.SC_OK )
+        .and().extract().jsonPath().getList( "", Product.class );
+        
+        assertThat( list ).isNotEmpty();
+    }
+   
+    @Test
+    public void shouldReturnStatusOkAndNotNullWhenFindAllProducts()
+    {
+        final List<Product> list = given().contentType( ContentType.JSON )
+            .when().get( "/product/searchAll" )
+            .then().log().everything().assertThat()
+            .statusCode( HttpStatus.SC_OK )
+            .and().extract().jsonPath().getList( "", Product.class );
+        
+        assertThat( list ).isNotEmpty();
+    }
+
+}

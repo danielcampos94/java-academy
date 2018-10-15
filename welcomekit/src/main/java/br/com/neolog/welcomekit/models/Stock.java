@@ -17,56 +17,65 @@ import javax.validation.constraints.NotNull;
 import com.google.common.base.MoreObjects;
 
 @Entity
-@Table(name = "stock")
-public class Stock {
+@Table( name = "stock" )
+public class Stock
+{
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "stock_sequence")
-	@SequenceGenerator(name = "stock_sequence", initialValue = 1, allocationSize = 1)
-	private Integer id;
+    @Id
+    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "stock_sequence" )
+    @SequenceGenerator( name = "stock_sequence", sequenceName="stock_sequence", initialValue = 1, allocationSize = 1 )
+    private Integer id;
 
-	@NotNull(message = "this field is not null")
-	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "product", unique = true)
-	private Product product;
+    @NotNull( message = "this field is not null" )
+    @OneToOne( fetch = FetchType.EAGER )
+    @JoinColumn( name = "product", unique = true )
+    private Product product;
 
-	@Column
-	@NotNull(message = "this field is not null")
-	private int quantity;
-	
-	public Stock() {
-		
-	}
-	
+    @Column
+    private int quantity;
 
-	public Stock(final Product product, final int quantity) {
-		this.product = requireNonNull(product);
-		this.quantity = quantity;
-	}
-	
-	public Stock(final Integer id, final Product product, final int quantity) {
-		this.id = id;
-		this.product = requireNonNull(product);
-		this.quantity = quantity;
-	}
-	
+    public Stock()
+    {
 
-	public Integer getId() {
-		return id;
-	}
+    }
+    
+    public Stock(
+        final Product product,
+        final int quantity )
+    {
+        this.product = requireNonNull( product );
+        this.quantity = quantity;
+    }
+    public Stock(
+        final Integer id,
+        final Product product,
+        final int quantity )
+    {
+        this.id = id;
+        this.product = requireNonNull( product );
+        this.quantity = quantity;
+    }
 
-	public Product getProduct() {
-		return product;
-	}
+    public Integer getId()
+    {
+        return id;
+    }
 
-	public int getQuantity() {
-		return quantity;
-	}
-	
-	public String toString(){
-		return MoreObjects.toStringHelper(Stock.class)
-				.add("id", id)
-				.add("product", product)
-				.add("quantity", quantity).toString();
-	}
+    public Product getProduct()
+    {
+        return product;
+    }
+
+    public int getQuantity()
+    {
+        return quantity;
+    }
+
+    public String toString()
+    {
+        return MoreObjects.toStringHelper( this )
+            .add( "id", id )
+            .add( "product", product )
+            .add( "quantity", quantity ).toString();
+    }
 }

@@ -22,7 +22,7 @@ public class RestExceptionHandler
         final ErrorResponse errorResponse = new ErrorResponse( new Date(), bindingResultToString( exception ), HttpStatus.BAD_REQUEST
             .value(),
             HttpStatus.BAD_REQUEST );
-        return new ResponseEntity<>( errorResponse, HttpStatus.BAD_REQUEST );
+        return new ResponseEntity<ErrorResponse>( errorResponse, HttpStatus.BAD_REQUEST );
     }
 
     private String bindingResultToString(

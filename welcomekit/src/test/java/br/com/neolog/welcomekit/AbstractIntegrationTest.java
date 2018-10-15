@@ -14,7 +14,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.com.neolog.welcomekit.WelcomeKitDCApplication;
 import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -47,9 +46,17 @@ public abstract class AbstractIntegrationTest
         RestAssured.config = RestAssuredConfig.config()
                 .objectMapperConfig( ObjectMapperConfig.objectMapperConfig().jackson2ObjectMapperFactory( new Jackson2ObjectMapperFactory() {
 
-					public ObjectMapper create(Type arg0, String arg1) {
+					public ObjectMapper create(final Type arg0, final String arg1) {
 						return objectMapper;
 					}
+
+                    @Override
+                    public ObjectMapper create(
+                        final Class arg0,
+                        final String arg1 )
+                    {
+                        return null;
+                    }
                 } ) );
     }
 }

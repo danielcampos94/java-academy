@@ -1,0 +1,13 @@
+package br.com.neolog.welcomekit.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import br.com.neolog.welcomekit.models.User;
+
+@Repository
+public interface UserRepository extends JpaRepository<User,Integer> 
+{
+    boolean existsByEmail(final String email);
+    User findByEmail(final String email);
+}

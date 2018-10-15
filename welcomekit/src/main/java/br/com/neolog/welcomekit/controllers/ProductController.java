@@ -26,7 +26,7 @@ public class ProductController
 {
 
     @Autowired
-    ProductService productService;
+    private ProductService productService;
 
     @PostMapping( "/save" )
     public ResponseEntity<Integer> saveProduct(
@@ -34,22 +34,23 @@ public class ProductController
     {
 
         final Integer productId = productService.save( product );
-        return new ResponseEntity<Integer>( productId, HttpStatus.CREATED );
+        return new ResponseEntity<>( productId, HttpStatus.CREATED );
     }
 
     @DeleteMapping( "/remove/{id}" )
     public ResponseEntity<Integer> deleteProduct(
         @PathVariable( "id" ) final Integer id )
     {
-        Integer idProduct = productService.delete( id );
-        return new ResponseEntity<Integer>( idProduct, HttpStatus.OK );
+        final Integer idProduct = productService.delete( id );
+        return new ResponseEntity<>( idProduct, HttpStatus.OK );
     }
 
     @GetMapping( "/search/id/{id}" )
-    public Product findProductById(
+    public ResponseEntity<Product> findProductById(
         @PathVariable( "id" ) final Integer id )
     {
-        return productService.findById( id );
+        final Product product = productService.findById( id );
+        return new ResponseEntity<>( product, HttpStatus.OK );
     }
 
     @GetMapping( "searchAll" )
@@ -63,20 +64,30 @@ public class ProductController
         @RequestBody @Valid final Product product )
     {
         productService.updateProduct( product );
-        return new ResponseEntity<Product>( product, HttpStatus.OK );
+        return new ResponseEntity<>( product, HttpStatus.OK );
     }
 
     @GetMapping( "/search/name/{name}" )
-    public Product findProductByName(
+    public ResponseEntity<Product> findProductByName(
         @PathVariable( "name" ) final String name )
     {
-        return productService.findByName( name );
+        final Product product = productService.findByName( name );
+        return new ResponseEntity<>( product, HttpStatus.OK );
     }
 
     @GetMapping( "/search/code/{code}" )
-    public Product findProductByCode(
+    public ResponseEntity<Product> findProductByCode(
         @PathVariable( "code" ) final Integer code )
     {
-        return productService.findByCode( code );
+        final Product product = productService.findByCode( code );
+        return new ResponseEntity<>( product, HttpStatus.OK );
+    }
+
+    @GetMapping( "/search/category/{idCategory}" )
+    public ResponseEntity<List<Product>> findByCategory(
+        @PathVariable( "idCategory" ) final int id )
+    {
+        final List<Product> list = productService.findAllProductByCategory( id );
+        return new ResponseEntity<>( list, HttpStatus.OK );
     }
 }

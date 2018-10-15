@@ -1,0 +1,184 @@
+package br.com.neolog.welcomekit;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import static io.restassured.RestAssured.given;
+
+import org.apache.http.HttpStatus;
+import org.hamcrest.Matchers;
+import org.junit.Test;
+
+import io.restassured.http.ContentType;
+
+public class StockIntegrationTest
+    extends
+        AbstractIntegrationTest
+{
+    /*
+     * @Test public void shouldReturnStatusCreatedWhenAddNewCategory() { final
+     * String json = "{\"code\":50, \"name\":\"Livros\"}"; final Integer
+     * categoryId = given().contentType( ContentType.JSON ).body( json
+     * ).when().post( "/category/save" ).then().log().everything()
+     * .assertThat().statusCode( HttpStatus.SC_CREATED
+     * ).and().extract().response().as( Integer.class ); assertThat( categoryId
+     * ).isEqualTo( 3 ); }
+     * @Test public void shouldReturnStatusOkAndVerifyUpdateCategory() { final
+     * String json = "{\"id\": 1, \"code\":80, \"name\":\"Eletrodomesticos\"}";
+     * final ProductCategory category = given().contentType( ContentType.JSON
+     * ).body( json ).when().put( "/category/update" ).then().log().everything()
+     * .assertThat().statusCode( HttpStatus.SC_OK
+     * ).and().extract().response().as( ProductCategory.class ); final
+     * ProductCategory updatedCategory = new
+     * ProductCategory(1,80,"Eletrodomesticos"); assertThat( category.equals(
+     * updatedCategory ) ); }
+     * @Test public void shouldReturnStatusOkWhenGetCategoryByCode() {
+     * given().contentType( ContentType.JSON ).when().get(
+     * "category/search/id/1" ).then().log().everything().assertThat()
+     * .statusCode( HttpStatus.SC_OK ).and().body( "id", Matchers.equalTo( 1 )
+     * ); }
+     * @Test public void shouldReturnStatusOkWhenDeleteCategoryByCode() { final
+     * Integer deletedCategoryId = given() .contentType( ContentType.JSON )
+     * .when().delete( "/category/remove/50" ) .then().log().everything()
+     * .assertThat() .statusCode( HttpStatus.SC_OK ).and()
+     * .extract().response().as( Integer.class ); assertThat( deletedCategoryId
+     * ).isEqualTo( 50 ); }
+     * @Test public void
+     * shouldThrowCategoryNotFoundExceptionWhenUpdateCategory() { final String
+     * json = "{ \"id\": 30, \"code\":10, \"name\":\"Eletronicos\"}"; given()
+     * .contentType( ContentType.JSON ) .body( json ).when().put(
+     * "/category/update" ) .then().log().everything() .assertThat()
+     * .statusCode( HttpStatus.SC_NOT_FOUND ).and() .body( "message",
+     * Matchers.equalTo( "ID=30 not exists" ) ); }
+     * @Test public void
+     * shouldThrowCategoryDuplicateCodeExceptionWhenCreateProduct() { final
+     * String json = "{ \"code\":11, \"name\":\"Lazer\"}"; given() .contentType(
+     * ContentType.JSON ) .body( json ).when().post( "/category/save" )
+     * .then().log().everything() .assertThat() .statusCode(
+     * HttpStatus.SC_METHOD_NOT_ALLOWED ).and() .body( "message",
+     * Matchers.equalTo( "CODE=11 already exists" ) ); }
+     * @Test public void
+     * shouldThrowCategoryDuplicateNameExceptionWhenCreateProduct() { final
+     * String json = "{ \"code\":654, \"name\":\"Eletronicos\"}"; given()
+     * .contentType( ContentType.JSON ) .body( json ).when().post(
+     * "/category/save" ) .then().log().everything() .assertThat() .statusCode(
+     * HttpStatus.SC_METHOD_NOT_ALLOWED ).and() .body( "message",
+     * Matchers.equalTo( "NAME=Eletronicos already exists" ) ); }
+     */
+
+    @Test
+    public void shouldReturnStatusCreatedWhenSaveNewStock()
+    {
+        final String json = "{\"product\": {\"id\": 4}, \"quantity\": 5000}";
+
+        final Integer totalStock = given().contentType( ContentType.JSON ).body( json ).when().post( "/stock/save" ).then().log()
+            .everything()
+            .assertThat().statusCode( HttpStatus.SC_CREATED ).and().extract().response().as( Integer.class );
+
+        assertThat( totalStock ).isEqualTo( 5000 );
+    }
+
+    @Test
+    public void shouldReturnStatusCreatedWhenSaveInExistStock()
+    {
+
+        final String json = "{\"product\": {\"id\": 4}, \"quantity\": 5000}";
+
+        final Integer totalStock = given().contentType( ContentType.JSON ).body( json ).when().post( "/stock/save" ).then().log()
+            .everything()
+            .assertThat().statusCode( HttpStatus.SC_CREATED ).and().extract().response().as( Integer.class );
+
+        assertThat( totalStock ).isEqualTo( 10000 );
+    }
+
+    @Test
+    public void shouldThrowProductNotExistsExceptionWhenSaveStock()
+    {
+        final String json = "{\"product\": {\"id\": 38}, \"quantity\": 5000}";
+
+        given().contentType( ContentType.JSON )
+            .body( json ).when().post( "/stock/save" )
+            .then().log().everything()
+            .assertThat()
+            .statusCode( HttpStatus.SC_METHOD_NOT_ALLOWED )
+            .and().body( "message", Matchers.equalTo( "This product not exists" ) );
+    }
+
+    @Test
+    public void shouldReturnStatusOkAndVerifyIncreaseQuantityStock()
+    {
+        final Integer totalStock = given().contentType( ContentType.JSON ).when().put( "/stock/increase/11/1000" ).then().log().everything()
+            .assertThat().statusCode( HttpStatus.SC_OK ).and().extract().response().as( Integer.class );
+
+        assertThat( totalStock ).isEqualTo( 10000 );
+    }
+
+    @Test
+    public void shouldReturnStatusOkAndVerifyDecreaseQuantityStock()
+    {
+        final Integer totalStock = given().contentType( ContentType.JSON ).when().put( "/stock/decrease/500/1000" ).then().log().everything()
+            .assertThat().statusCode( HttpStatus.SC_OK ).and().extract().response().as( Integer.class );
+
+        assertThat( totalStock ).isEqualTo( 0 );
+    }
+
+    @Test
+    public void shouldThrowProductNotExistsExceptionWhenDecreaseOrIncreaseNotExistsCodeProduct()
+    {
+        given().contentType( ContentType.JSON ).when().put( "/stock/decrease/700/300" ).then().log().everything()
+            .assertThat().statusCode( HttpStatus.SC_METHOD_NOT_ALLOWED ).and().body( "message", Matchers.equalTo(
+                "This product not exists" ) );
+    }
+
+    @Test
+    public void shouldReturnStatusOkAndNotNullWhenFindStockQuantityByCodeProduct()
+    {
+        final Integer totalQuantity = given().contentType( ContentType.JSON )
+            .when().get( "/stock/search/quantity/code/500" )
+            .then().log().everything().assertThat()
+            .statusCode( HttpStatus.SC_OK )
+            .and().extract().response().as( Integer.class );
+
+        assertThat( totalQuantity ).isEqualTo( 0 );
+    }
+
+    @Test
+    public void shouldReturnStatusOkAndYourIdWhenDeleteStock()
+    {
+        final Integer deletedProductCode = given()
+            .contentType( ContentType.JSON )
+            .when().delete( "/stock/remove/500" )
+            .then().log().everything()
+            .assertThat()
+            .statusCode( HttpStatus.SC_OK ).and()
+            .extract().response().as( Integer.class );
+
+        assertThat( deletedProductCode ).isEqualTo( 500 );
+
+    }
+
+    @Test
+    public void shouldThrowProductNotExistsExceptionWhenDeleteStock()
+    {
+        given()
+            .contentType( ContentType.JSON )
+            .when().delete( "/stock/remove/90" )
+            .then().log().everything()
+            .assertThat()
+            .statusCode( HttpStatus.SC_METHOD_NOT_ALLOWED ).and()
+            .body( "message", Matchers.equalTo( "CODE_PRODUCT=90 not exists" ) );
+
+    }
+    
+    @Test
+    public void shouldThrowStockQuantityNotEmptyExceptionWhenDeleteStock()
+    {
+        given()
+        .contentType( ContentType.JSON )
+        .when().delete( "/stock/remove/11" )
+        .then().log().everything()
+        .assertThat()
+        .statusCode( HttpStatus.SC_METHOD_NOT_ALLOWED ).and()
+        .body( "message", Matchers.equalTo( "Stock of this product is not empty" ) );
+        
+    }
+}

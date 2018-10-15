@@ -50,6 +50,7 @@
 		<createSequence sequenceName="product_sequence" startValue="1" incrementBy="1"/>
 		<createSequence sequenceName="product_category_sequence" startValue="1" incrementBy="1"/>
 		<createSequence sequenceName="stock_sequence" startValue="1" incrementBy="1"/>
+		<createSequence sequenceName="user_sequence" startValue="1" incrementBy="1"/>
 				
 		<addForeignKeyConstraint baseColumnNames="category"
             baseTableName="product"
@@ -67,7 +68,7 @@
 		
 	</changeSet>
 	
-	<changeSet id="2" author="daniel.campos" context="test">
+	<changeSet id="2" author="daniel.campos" >
 		
 		<insert tableName="product_category">
 			<column name="id" valueSequenceNext="product_category_sequence"/>
@@ -101,6 +102,26 @@
             <column name="category" value="1"/>
 		</insert>
 		
+		<insert tableName="product" >
+			<column name="id" valueSequenceNext="product_sequence"/>
+			<column name="code" value="500"/>
+			<column name="name" value="Celular"/>
+            <column name="price" value="4000.0"/>
+            <column name="description" value="IphoneX"/>
+            <column name="weight" value="0.8"/>
+            <column name="category" value="1"/>
+		</insert>
+		
+		<insert tableName="product" >
+			<column name="id" valueSequenceNext="product_sequence"/>
+			<column name="code" value="600"/>
+			<column name="name" value="Celular"/>
+            <column name="price" value="4000.0"/>
+            <column name="description" value="IphoneX"/>
+            <column name="weight" value="0.8"/>
+            <column name="category" value="1"/>
+		</insert>
+		
 		<insert tableName="stock">
 			<column name="id" valueSequenceNext="stock_sequence"/>
 			<column name="product" value="2"/>
@@ -112,6 +133,36 @@
 			<column name="product" value="1"/>
 			<column name="quantity" value="0"/>
 		</insert>
+		
+		<insert tableName="stock">
+			<column name="id" valueSequenceNext="stock_sequence"/>
+			<column name="product" value="3"/>
+			<column name="quantity" value="1000"/>
+		</insert>
+		
+		
+	</changeSet>
+	
+	<changeSet id="3" author="daniel.campos">
+		<createTable tableName="user">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="pk_user_id"/>
+			</column>
+			<column name="email" type="varchar" >
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="name" type="varchar" >
+				<constraints nullable="false"/>
+			</column>
+			<column name="password" type="varchar" >
+				<constraints nullable="false"/>
+			</column>
+			<column name="inactive" type="int" >
+				<constraints nullable="false"/>
+			</column>
+			
+			
+		</createTable>
 	</changeSet>
 
 </databaseChangeLog>

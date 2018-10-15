@@ -1,0 +1,20 @@
+package br.com.neolog.welcomekit.services;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import br.com.neolog.welcomekit.models.User;
+import br.com.neolog.welcomekit.repository.UserRepository;
+
+@Service
+public class UserService
+{
+    @Autowired
+    private UserRepository userRepository;
+
+    public Integer save(
+        final User user )
+    {
+        return userRepository.save( user ).getId();
+    }
+}
