@@ -272,12 +272,4 @@
 		</sql>
 	</changeSet>
 
-	<changeSet id="7" author="daniel.campos">
-
-		<comment>NLG-20837 - Criação de unique com os campos "customer" e "status"</comment>
-		<sql dbms="postgresql">
-			CREATE UNIQUE INDEX cart_active ON cart (customer,
-			status) WHERE (status = 'ACTIVE');
-		</sql>
-	</changeSet>
 </databaseChangeLog>

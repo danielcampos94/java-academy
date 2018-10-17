@@ -1,0 +1,61 @@
+package br.com.neolog.welcomekit.services;
+
+import static br.com.neolog.welcomekit.utils.EncryptPassword.encrypt;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import br.com.neolog.welcomekit.exceptions.customer.CustomerNotFoundException;
+import br.com.neolog.welcomekit.models.Customer;
+import br.com.neolog.welcomekit.repository.CustomerRepository;
+
+@Service
+public class CustomerService
+{
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    public Integer save(
+        final Customer customer )
+    {
+        final Customer user = findByEmail( customer.getEmail() );
+        if( user != null ) {
+            user.setInactive( 0 );
+            return customerRepository.save( user ).getId();
+        }
+        customer.setPassword( encrypt( customer.getPassword() ) );
+        return customerRepository.save( customer ).getId();
+    }
+
+    public Customer update(
+        final Customer customer )
+    {
+        if( ! customerRepository.existsById( customer.getId() ) ) {
+            throw new CustomerNotFoundException( "ID=" + customer.getId() + " not exists" );
+        }
+        return customerRepository.save( customer );
+    }
+
+    public Customer findByEmail(
+        final String email )
+    {
+        return customerRepository.findByEmail( email );
+    }
+
+    public List<Customer> findAll()
+    {
+        return customerRepository.findAll();
+    }
+
+    public void delete(
+        final String email )
+    {
+        if( ! customerRepository.existsByEmail( email ) ) {
+            throw new CustomerNotFoundException( "EMAIL=" + email + " not exists" );
+        }
+        final Integer deletedId = customerRepository.findByEmail( email ).getId();
+        customerRepository.deleteById( deletedId );
+    }
+}

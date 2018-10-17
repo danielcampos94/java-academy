@@ -1,0 +1,13 @@
+package br.com.neolog.welcomekit.utils;
+
+import static org.springframework.security.crypto.bcrypt.BCrypt.gensalt;
+import static org.springframework.security.crypto.bcrypt.BCrypt.hashpw;
+
+public class EncryptPassword
+{
+    public static final String encrypt(
+        final String password )
+    {
+        return new String( hashpw( password, gensalt() ) );
+    }
+}

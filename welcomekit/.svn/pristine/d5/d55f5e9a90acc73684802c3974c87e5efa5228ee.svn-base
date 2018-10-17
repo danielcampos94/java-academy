@@ -3,40 +3,31 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
-	<changeSet id="1-pre" author="daniel.campos" dbms="postgresql"
-		runAlways="true">
-
-		<comment>NLG-20815 - Cria function para fazer boolean virar smallint</comment>
+	<changeSet id="1-pre" author="daniel.campos" dbms="postgresql">
+		<comment>NLG-20759 - Cria function para fazer boolean virar smallint</comment>
 		<sql splitStatements="false">
-			CREATE OR REPLACE FUNCTION
-			booleanToSmallint(v boolean)
-			RETURNS smallint
-			LANGUAGE PLPGSQL
-			IMMUTABLE STRICT
-			COST 1
-			AS $$
-			BEGIN
-			if ( v = true ) then
-			return 1;
-			end if;
-			if ( v = false ) then
-			return 0;
-			end if;
-			raise exception 'Conversion to
-			boolean failed for %', v;
-			END $$;
+		CREATE OR REPLACE FUNCTION booleanToSmallint(v boolean)
+			  RETURNS smallint
+			  LANGUAGE PLPGSQL 
+			  IMMUTABLE STRICT
+			  COST 1
+			  AS $$
+			  BEGIN
+				if ( v = true ) then
+					return 1;
+				end if;
+				if ( v = false ) then
+					return 0;
+				end if;
+				raise exception 'Conversion to boolean failed for %', v;
+			  END $$;
 
-			DROP CAST IF EXISTS (boolean AS
-			smallint);
-			CREATE CAST (boolean AS
-			smallint) WITH FUNCTION
-			booleanToSmallint(boolean) as implicit;
+			DROP CAST IF EXISTS (boolean AS smallint);
+			CREATE CAST (boolean AS smallint) WITH FUNCTION booleanToSmallint(boolean) as implicit;
 		</sql>
 	</changeSet>
-
+	
 	<changeSet id="1" author="daniel.campos">
-
-		<comment>CRIAÇÃO DA TABELA PRODUTO</comment>
 		<createTable tableName="product">
 			<column name="id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" primaryKeyName="pk_product_id"
@@ -58,7 +49,6 @@
 			</column>
 		</createTable>
 
-		<comment>CRIAÇÃO DA TABELA CATEGORIA</comment>
 		<createTable tableName="product_category">
 			<column name="id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" primaryKeyName="pk_product_category_id" />
@@ -71,7 +61,6 @@
 			</column>
 		</createTable>
 
-		<comment>CRIAÇÃO DA TABELA ESTOQUE</comment>
 		<createTable tableName="stock">
 			<column name="id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" primaryKeyName="pk_stock_id" />
@@ -83,7 +72,6 @@
 
 		</createTable>
 
-		<comment>CRIAÇÃO DAS SEQUENCES DAS TABELAS PRODUTO,CATEGORIA,ESTOQUE</comment>
 		<createSequence sequenceName="product_sequence"
 			startValue="1" incrementBy="1" />
 		<createSequence sequenceName="product_category_sequence"
@@ -91,7 +79,6 @@
 		<createSequence sequenceName="stock_sequence"
 			startValue="1" incrementBy="1" />
 
-		<comment>CRIAÇÃO DAS CHAVES ESTRANGEIRAS</comment>
 		<addForeignKeyConstraint baseColumnNames="category"
 			baseTableName="product" constraintName="fk_product_category"
 			referencedColumnNames="id" referencedTableName="product_category" />
@@ -100,11 +87,11 @@
 			baseTableName="stock" constraintName="fk_stock_product" onDelete="CASCADE"
 			referencedColumnNames="id" referencedTableName="product" />
 
+
 	</changeSet>
 
 	<changeSet id="2" author="daniel.campos">
 
-		<comment>INSERÇÕES NA TABELA CATEGORIA</comment>
 		<insert tableName="product_category">
 			<column name="id" valueSequenceNext="product_category_sequence" />
 			<column name="code" value="10" />
@@ -117,7 +104,6 @@
 			<column name="name" value="Acessorios para celular" />
 		</insert>
 
-		<comment>INSERÇÕES NA TABELA PRODUTO</comment>
 		<insert tableName="product">
 			<column name="id" valueSequenceNext="product_sequence" />
 			<column name="code" value="10" />
@@ -158,7 +144,6 @@
 			<column name="category" value="1" />
 		</insert>
 
-		<comment>INSERÇÕES NA TABELA ESTOQUE</comment>
 		<insert tableName="stock">
 			<column name="id" valueSequenceNext="stock_sequence" />
 			<column name="product" value="2" />
@@ -181,8 +166,6 @@
 	</changeSet>
 
 	<changeSet id="3" author="daniel.campos">
-
-		<comment>CRIAÇÃO DA TABELA USUARIO</comment>
 		<createTable tableName="customer">
 			<column name="id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" primaryKeyName="pk_customer_id" />
@@ -201,15 +184,12 @@
 			</column>
 		</createTable>
 
-		<comment>CRIAÇÃO DA SEQUENCE DE USUARIO</comment>
 		<createSequence sequenceName="customer_sequence"
 			startValue="1" incrementBy="1" />
 
 	</changeSet>
 
 	<changeSet id="4" author="daniel.campos">
-
-		<comment>CRIAÇÃO DA TABELA CARRINHO</comment>
 		<createTable tableName="cart">
 			<column name="id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" primaryKeyName="pk_cart_id" />
@@ -223,19 +203,15 @@
 			</column>
 		</createTable>
 
-		<comment>CRIAÇÃO DA SEQUENCE DO CARRINHO</comment>
 		<createSequence sequenceName="cart_sequence"
 			startValue="1" incrementBy="1" />
 
-		<comment>CRIAÇÃO DA CHAVE ESTRANGEIRA DA TABELA CARRINHO</comment>
 		<addForeignKeyConstraint baseColumnNames="customer"
 			baseTableName="cart" constraintName="fk_cart_customer"
 			referencedColumnNames="id" referencedTableName="customer" />
 	</changeSet>
 
 	<changeSet id="5" author="daniel.campos">
-
-		<comment>CRIAÇÃO DA TABELA ITEM DO CARRINHO</comment>
 		<createTable tableName="cart_item">
 			<column name="id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" primaryKeyName="pk_cart_item_id" />
@@ -249,11 +225,9 @@
 			</column>
 		</createTable>
 
-		<comment>CRIAÇÃO DA SEQUENCE ITEM DO CARRINHO</comment>
 		<createSequence sequenceName="cart_item_sequence"
 			startValue="1" incrementBy="1" />
 
-		<comment>CRIAÇÃO DAS CHAVES ESTRANGEIRAS NA TABELA ITEM DO CARRINHO</comment>
 		<addForeignKeyConstraint baseColumnNames="product"
 			baseTableName="cart_item" constraintName="fk_cart_item_product"
 			referencedColumnNames="id" referencedTableName="product" />
@@ -263,21 +237,4 @@
 			referencedColumnNames="id" referencedTableName="cart" />
 	</changeSet>
 
-	<changeSet id="6" author="daniel.campos">
-
-		<comment>NLG-20836 - Criação de unique com os campos "email" e "inactive"</comment>
-		<sql dbms="postgresql">
-			CREATE UNIQUE INDEX customer_email ON customer (email,
-			inactive) WHERE (inactive = 0);
-		</sql>
-	</changeSet>
-
-	<changeSet id="7" author="daniel.campos">
-
-		<comment>NLG-20837 - Criação de unique com os campos "customer" e "status"</comment>
-		<sql dbms="postgresql">
-			CREATE UNIQUE INDEX cart_active ON cart (customer,
-			status) WHERE (status = 'ACTIVE');
-		</sql>
-	</changeSet>
 </databaseChangeLog>

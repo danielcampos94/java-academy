@@ -1,0 +1,67 @@
+package br.com.neolog.welcomekit.controllers;
+
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.com.neolog.welcomekit.models.User;
+import br.com.neolog.welcomekit.services.UserService;
+
+@RestController
+@RequestMapping( value = "/user", produces = MediaType.APPLICATION_JSON_VALUE )
+public class UserController
+{
+    @Autowired
+    private UserService userSevice;
+
+    @PostMapping( "/save" )
+    public ResponseEntity<Integer> save(
+        @RequestBody @Valid final User user )
+    {
+        final Integer idUser = userSevice.save( user );
+        return new ResponseEntity<>( idUser, HttpStatus.CREATED );
+    }
+
+    @PutMapping( "/update" )
+    public ResponseEntity<User> update(
+        @RequestBody @Valid final User user )
+    {
+        userSevice.update( user );
+        return new ResponseEntity<>( user, HttpStatus.OK );
+    }
+
+    @GetMapping( "search/email" )
+    public ResponseEntity<User> findByEmail(
+        @RequestParam( "email" ) final String email )
+    {
+        final User user = userSevice.findByEmail( email );
+        return new ResponseEntity<>( user, HttpStatus.OK );
+    }
+
+    @GetMapping( "search/all" )
+    public List<User> findAll()
+    {
+        return userSevice.findAll();
+    }
+
+    @DeleteMapping( "remove/email" )
+    public ResponseEntity<String> delete(
+        @RequestParam( "email" ) final String email )
+    {
+        userSevice.delete( email );
+        return new ResponseEntity<>( email + "deleted", HttpStatus.OK );
+    }
+}
