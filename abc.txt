@@ -1,0 +1,116 @@
+package br.com.neolog.project;
+
+import static br.com.neolog.project.LoggerMaster.info;
+import static br.com.neolog.project.LoggerMaster.warning;
+import static br.com.neolog.project.UserThreadLocal.removeCurrentUser;
+import static br.com.neolog.project.UserThreadLocal.setCurrentUser;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import br.com.neolog.project.authentication.Session;
+import br.com.neolog.project.authentication.SessionRepository;
+import br.com.neolog.project.user.User;
+
+@WebFilter(urlPatterns =
+{ "/user/*", "/product/*", "/category/*", "/stock/*", "/cart/*", "/cartItem/*", "/optimization/*" })
+public class MainFilter implements Filter
+{
+
+	@Autowired
+	SessionRepository sessionRepository;
+
+	@Override
+	public void init(final FilterConfig filterConfig) throws ServletException
+	{
+		info("Initializing servlet filter");
+	}
+
+	@Override
+	public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse,
+			final FilterChain chain) throws IOException, ServletException
+	{
+
+		info("Filtering request");
+
+		final HttpServletRequest request = (HttpServletRequest) servletRequest;
+		final HttpServletResponse response = (HttpServletResponse) servletResponse;
+
+		final String token = request.getHeader("token");
+
+		if (isValidToken(token))
+		{
+
+			final Session session = sessionRepository.findByToken(token);
+
+			final User currentUser = session.getUser();
+			setCurrentUser(currentUser);
+			try
+			{
+				chain.doFilter(request, response);
+			}
+			finally
+			{
+				removeCurrentUser();
+			}
+		}
+		else
+		{
+
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Token");
+		}
+	}
+
+	@Override
+	public void destroy()
+	{
+		warning("destroying servlet filter");
+	}
+
+	private boolean isValidToken(final String token)
+	{
+		if (token == null)
+		{
+			return false;
+		}
+
+		if (token.isEmpty())
+		{
+			return false;
+		}
+
+		if (!(sessionRepository.existsByToken(token)))
+		{
+			return false;
+		}
+		try
+		{
+			final Session session = sessionRepository.findByToken(token);
+			final SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			final Date expiration = format.parse(session.getExpiration());
+			if (expiration.after(new Date()))
+			{
+				return true;
+			}
+		}
+		catch (final ParseException e)
+		{
+			LoggerMaster.warning("Erro ao parsear data da session");
+		}
+		return false;
+	}
+}

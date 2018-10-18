@@ -32,7 +32,7 @@ public class CartItem
 
     @Column
     @Min( 1 )
-    private long quantity;
+    private int quantity;
 
     @NotNull( message = "this field is not null" )
     @ManyToOne( fetch = FetchType.EAGER )
@@ -49,7 +49,13 @@ public class CartItem
         return product;
     }
 
-    public long getQuantity()
+    public void setProduct(
+        final Product product )
+    {
+        this.product = product;
+    }
+
+    public int getQuantity()
     {
         return quantity;
     }
@@ -57,6 +63,12 @@ public class CartItem
     public Cart getCart()
     {
         return cart;
+    }
+
+    public void setCart(
+        final Cart cart )
+    {
+        this.cart = cart;
     }
 
     @Override

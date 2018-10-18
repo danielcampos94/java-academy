@@ -208,6 +208,7 @@
 	</changeSet>
 
 	<changeSet id="4" author="daniel.campos">
+		<sql dbms="h2">CREATE TYPE status AS ENUM ('ACTIVE','CANCELLED','FINISHED')</sql>
 
 		<comment>CRIAÇÃO DA TABELA CARRINHO</comment>
 		<createTable tableName="cart">
@@ -218,7 +219,7 @@
 				<constraints nullable="false" />
 			</column>
 			<column name="total_value" type="bigint" />
-			<column name="cart_status" type="varchar">
+			<column name="cart_status" type="status">
 				<constraints nullable="false" />
 			</column>
 		</createTable>

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.neolog.welcomekit.exceptions.product.ProductNotFoundException;
+import br.com.neolog.welcomekit.exceptions.stock.StockIllegalQuantityException;
 import br.com.neolog.welcomekit.models.Product;
 import br.com.neolog.welcomekit.models.Stock;
 import br.com.neolog.welcomekit.repository.ProductRepository;
@@ -48,6 +49,9 @@ public class StockService
         existsProduct( productCode );
         final Product product = productRepository.findByCode( productCode );
         final Stock stock = stockRepository.findByProduct( product );
+        if(stock.getQuantity()< quantity){
+            throw new StockIllegalQuantityException( "This quantity greater than stock" );
+        }
         return stockRepository.save( new Stock( stock.getId(), product, ( stock.getQuantity() - quantity ) ) );
     }
 

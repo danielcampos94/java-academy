@@ -14,6 +14,8 @@ import javax.validation.constraints.NotNull;
 
 import com.google.common.base.MoreObjects;
 
+import br.com.neolog.welcomekit.CartStatus;
+
 @Entity
 @Table( name = "cart" )
 public class Cart
@@ -33,6 +35,20 @@ public class Cart
 
     @NotNull( message = "this field is not null" )
     private CartStatus cartStatus;
+
+    public Cart()
+    {
+    }
+
+    public Cart(
+        final Customer customer,
+        final long totalValue,
+        final CartStatus cartStatus )
+    {
+        this.customer = customer;
+        this.totalValue = totalValue;
+        this.cartStatus = cartStatus;
+    }
 
     public Integer getId()
     {
