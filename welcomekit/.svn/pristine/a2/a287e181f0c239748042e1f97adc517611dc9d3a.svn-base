@@ -1,23 +1,14 @@
 package br.com.neolog.welcomekit.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import br.com.neolog.welcomekit.models.Cart;
 import br.com.neolog.welcomekit.models.CartItem;
-import br.com.neolog.welcomekit.models.Product;
 
 @Repository
 public interface CartItemRepository
     extends
         JpaRepository<CartItem,Integer>
 {
-    CartItem findByProductAndCart(
-        final Product product,
-        final Cart cart );
 
-    List<CartItem> findAllByCartId(
-        final Integer id );
 }

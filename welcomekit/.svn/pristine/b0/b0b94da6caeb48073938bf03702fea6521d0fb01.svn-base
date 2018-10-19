@@ -1,0 +1,24 @@
+package br.com.neolog.welcomekit.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import br.com.neolog.welcomekit.CartStatus;
+import br.com.neolog.welcomekit.models.Cart;
+import br.com.neolog.welcomekit.models.Customer;
+
+@Repository
+public interface CartRepository
+    extends
+        JpaRepository<Cart,Integer>
+{
+    Cart findById(
+        final int id );
+
+    Cart findByCustomer(
+        final Customer customer );
+
+    Cart findByCustomerIdAndCartStatus(
+        final Integer id, final CartStatus status);
+
+}

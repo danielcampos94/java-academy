@@ -23,7 +23,7 @@ public class Product
 
     @Id
     @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "product_sequence" )
-    @SequenceGenerator( name = "product_sequence", sequenceName="product_sequence", initialValue = 1, allocationSize = 1 )
+    @SequenceGenerator( name = "product_sequence", sequenceName = "product_sequence", initialValue = 1, allocationSize = 1 )
     private Integer id;
 
     @Column( unique = true )
@@ -68,7 +68,7 @@ public class Product
         this.category = requireNonNull( category );
         this.weight = ( weight * 10 * 10 );
     }
-    
+
     public Product(
         final Integer id,
         final Integer code,
@@ -105,7 +105,7 @@ public class Product
 
     public double getPrice()
     {
-        return price/100;
+        return price / 100;
     }
 
     public String getDescription()
@@ -120,9 +120,8 @@ public class Product
 
     public double getWeight()
     {
-        return weight/100;
+        return weight / 100;
     }
-    
 
     @Override
     public String toString()

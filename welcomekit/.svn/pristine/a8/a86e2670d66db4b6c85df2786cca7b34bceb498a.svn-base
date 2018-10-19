@@ -3,8 +3,6 @@ package br.com.neolog.welcomekit.services;
 import static br.com.neolog.welcomekit.CartStatus.ACTIVE;
 import static br.com.neolog.welcomekit.CustomerLocal.getCurrentCustomerId;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -73,35 +71,7 @@ public class CartService
         cartItemRepository.delete( item );
     }
 
-    public CartItem removeQuantityItem(
-        final Integer productCode,
-        final int quantity )
-    {
-        final Cart cart = getActiveCart( customerRepository.findById( getCurrentCustomerId() ) );
-        final Product product = productRepository.findByCode( productCode );
-        if( product == null ) {
-            throw new ProductNotFoundException( "This product not exists" );
-        }
-        final CartItem item = cartItemRepository.findByProductAndCart( product, cart );
-        if( quantity > item.getQuantity() ) {
-            throw new CartItemIllegalQuantityException( "teste" );
-        }
-        item.setQuantity( item.getQuantity() - quantity );
-        return cartItemRepository.save( item );
-    }
-
-    public List<CartItem> findAllItens(
-        final Integer id )
-    {
-        return cartItemRepository.findAllByCartId( id );
-    }
-
-    public Double getCurrentPrice()
-    {
-        final Integer cartId = cartRepository.findByCustomerIdAndCartStatus( getCurrentCustomerId(), ACTIVE ).getId();
-        final List<CartItem> list = findAllItens( cartId );
-        return list.stream().mapToDouble( item -> item.getProduct().getPrice() * item.getQuantity() ).sum();
-    }
+    
 
     private Cart getActiveCart(
         final Customer customer )

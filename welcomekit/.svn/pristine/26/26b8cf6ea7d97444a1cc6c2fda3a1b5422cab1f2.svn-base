@@ -1,0 +1,103 @@
+package br.com.neolog.welcomekit.models;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.Type;
+import org.joda.time.DateTime;
+
+import com.google.common.base.MoreObjects;
+
+@Entity
+@Table( name = "session" )
+public class Session
+{
+    @Id
+    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "session_sequence" )
+    @SequenceGenerator( name = "session_sequence", sequenceName = "session_sequence", initialValue = 1, allocationSize = 1 )
+    private Integer id;
+
+    @Column( unique = true )
+    @NotBlank( message = "this field is not null and not empty" )
+    private String token;
+
+    @Column
+    @NotNull( message = "this field is not null" )
+    private DateTime expirationDate;
+
+    @Column
+    @NotNull( message = "this field is not null" )
+    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentDateTime")
+    private DateTime loginDate;
+
+    @NotNull( message = "this field is not null" )
+    @OneToOne( fetch = FetchType.EAGER )
+    @JoinColumn( name = "customer" )
+    private Customer customer;
+
+    public Session()
+    {
+
+    }
+
+    public Session(
+        final String token,
+        final DateTime expirationDate,
+        final DateTime loginDate,
+        final Customer customer )
+    {
+        this.token = token;
+        this.expirationDate = expirationDate;
+        this.loginDate = loginDate;
+        this.customer = customer;
+    }
+
+    public Integer getId()
+    {
+        return id;
+    }
+
+    public String getToken()
+    {
+        return token;
+    }
+
+    public DateTime getExpirationDate()
+    {
+        return expirationDate;
+    }
+
+    public DateTime getLoginDate()
+    {
+        return loginDate;
+    }
+
+    public Customer getCustomer()
+    {
+        return customer;
+    }
+    
+    
+    @Override
+    public String toString()
+    {
+        return MoreObjects.toStringHelper( this )
+            .add( "id", id )
+            .add( "token", token )
+            .add( "expirationDate", expirationDate )
+            .add( "loginDate", loginDate )
+            .add( "customer", customer )
+            .toString();
+    }
+
+}

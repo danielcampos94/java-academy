@@ -15,5 +15,8 @@ public interface CustomerRepository
 
     Customer findByEmailAndInactiveFalse(
         final String email );
-   
+
+    Customer findById(
+        final int id );
+
 }

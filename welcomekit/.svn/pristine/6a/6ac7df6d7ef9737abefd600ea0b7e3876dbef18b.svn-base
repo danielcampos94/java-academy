@@ -1,13 +1,10 @@
 package br.com.neolog.welcomekit.controllers;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,19 +42,6 @@ public class CartController
         @RequestParam final int quantity )
     {
         return ResponseEntity.ok().body( cartService.removeQuantityItem( productCode, quantity ) );
-    }
-
-    @GetMapping( "/search/all/cart/id" )
-    public List<CartItem> findAllByCartId(
-        @RequestParam( "cartId" ) final Integer id )
-    {
-        return cartService.findAllItens( id );
-    }
-
-    @GetMapping( "/get/current/price" )
-    public ResponseEntity<Double> getPrice()
-    {
-        return ResponseEntity.ok().body( cartService.getCurrentPrice() );
     }
 
 }

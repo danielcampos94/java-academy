@@ -1,8 +1,5 @@
 package br.com.neolog.welcomekit;
 
-
-import java.lang.reflect.Type;
-
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +23,9 @@ import io.restassured.mapper.factory.Jackson2ObjectMapperFactory;
 @ActiveProfiles( {
     "test"
 } )
-@SpringBootTest(classes = {WelcomeKitDCApplication.class}, webEnvironment=WebEnvironment.RANDOM_PORT)
+@SpringBootTest( classes = {
+    WelcomeKitDCApplication.class
+}, webEnvironment = WebEnvironment.RANDOM_PORT )
 public abstract class AbstractIntegrationTest
 {
     @Value( "${local.server.port}" )
@@ -42,21 +41,18 @@ public abstract class AbstractIntegrationTest
     public final void parentSetUp()
     {
         RestAssured.port = realPort;
-        
+
         RestAssured.config = RestAssuredConfig.config()
-                .objectMapperConfig( ObjectMapperConfig.objectMapperConfig().jackson2ObjectMapperFactory( new Jackson2ObjectMapperFactory() {
+            .objectMapperConfig( ObjectMapperConfig.objectMapperConfig().jackson2ObjectMapperFactory( new Jackson2ObjectMapperFactory() {
 
-					public ObjectMapper create(final Type arg0, final String arg1) {
-						return objectMapper;
-					}
+                @Override
+                public ObjectMapper create(
+                    final Class arg0,
+                    final String arg1 )
+                {
+                    return objectMapper;
+                }
 
-                    @Override
-                    public ObjectMapper create(
-                        final Class arg0,
-                        final String arg1 )
-                    {
-                        return null;
-                    }
-                } ) );
+            } ) );
     }
 }

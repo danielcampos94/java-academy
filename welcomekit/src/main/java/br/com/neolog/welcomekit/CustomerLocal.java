@@ -1,23 +1,21 @@
 package br.com.neolog.welcomekit;
 
-import br.com.neolog.welcomekit.models.Customer;
-
 public class CustomerLocal
 {
-    private static final ThreadLocal<Customer> threadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<Integer> threadLocal = new ThreadLocal<>();
 
-    public static Customer getCurrentCustomer()
+    public static int getCurrentCustomerId()
     {
         return threadLocal.get();
     }
 
-    public static void setCurrentCustomer(
-        final Customer customer )
+    public static void setCurrentCustomerId(
+        final int id )
     {
-        threadLocal.set( customer );;
+        threadLocal.set( id );;
     }
 
-    public static void removeCurrentCustomer()
+    public static void removeCurrentCustomerId()
     {
         threadLocal.remove();
     }

@@ -3,8 +3,6 @@ package br.com.neolog.welcomekit.services;
 import static br.com.neolog.welcomekit.CartStatus.ACTIVE;
 import static br.com.neolog.welcomekit.CustomerLocal.getCurrentCustomerId;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -88,19 +86,6 @@ public class CartService
         }
         item.setQuantity( item.getQuantity() - quantity );
         return cartItemRepository.save( item );
-    }
-
-    public List<CartItem> findAllItens(
-        final Integer id )
-    {
-        return cartItemRepository.findAllByCartId( id );
-    }
-
-    public Double getCurrentPrice()
-    {
-        final Integer cartId = cartRepository.findByCustomerIdAndCartStatus( getCurrentCustomerId(), ACTIVE ).getId();
-        final List<CartItem> list = findAllItens( cartId );
-        return list.stream().mapToDouble( item -> item.getProduct().getPrice() * item.getQuantity() ).sum();
     }
 
     private Cart getActiveCart(
