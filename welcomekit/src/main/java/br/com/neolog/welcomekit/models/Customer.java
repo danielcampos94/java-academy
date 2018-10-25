@@ -2,6 +2,8 @@ package br.com.neolog.welcomekit.models;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,8 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 import com.google.common.base.MoreObjects;
 
@@ -23,16 +25,16 @@ public class Customer
     @SequenceGenerator( name = "customer_sequence", sequenceName = "customer_sequence", initialValue = 1, allocationSize = 1 )
     private Integer id;
 
-    @NotBlank( message = "this field can not be empty or null" )
-    @Email
+    @NotBlank( message = "this field can not be null" )
+    @Pattern( regexp = "[a-z0-9]+[a-z0-9.]+@[a-z0-9]+\\.[a-z0-9]+(\\.[a-z0-9]+)?", message = "Formato de email inválido" )
     private String email;
 
-    @Column( unique = true )
-    @NotBlank( message = "this field can not be empty or null" )
+    @Column
+    @NotBlank( message = "this field can not be null" )
     private String name;
 
     @Column
-    @NotBlank( message = "this field can not be empty or null" )
+    @NotBlank( message = "this field can not be null" )
     private String password;
 
     @Column
@@ -115,6 +117,31 @@ public class Customer
             .add( "password", password )
             .add( "inactive", inactive )
             .toString();
+    }
+
+    @Override
+    public boolean equals(
+        final Object obj )
+    {
+        if( this == obj ) {
+            return true;
+        }
+
+        if( ! ( obj instanceof Customer ) ) {
+            return false;
+        }
+        final Customer customer = (Customer) obj;
+        return Objects.equals( id, customer.id )
+            && Objects.equals( email, customer.email )
+            && Objects.equals( name, customer.name )
+            && Objects.equals( password, customer.password )
+            && Objects.equals( inactive, customer.inactive );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash( id, email, name, password, inactive );
     }
 
 }

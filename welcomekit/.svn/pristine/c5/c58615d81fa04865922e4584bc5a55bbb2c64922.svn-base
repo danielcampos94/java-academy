@@ -1,0 +1,86 @@
+package br.com.neolog.welcomekit;
+
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.apache.http.HttpStatus;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import br.com.neolog.welcomekit.models.Customer;
+import br.com.neolog.welcomekit.repository.CustomerRepository;
+import br.com.neolog.welcomekit.services.SessionService;
+import io.restassured.http.ContentType;
+
+public class CustomerIntegrationTest
+    extends
+        AbstractIntegrationTest
+{
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private SessionService sessionService;
+
+    @Test
+    public void saveShouldReturnStatusCreatedAndYourIdWhenSaveNewCustomer()
+    {
+
+        final String json = "{\"email\":\"teste123@teste.com.br\" , \"name\":\"teste123\" , \"password\":\"teste1234\"}";
+
+        final Integer customerId = given().contentType( ContentType.JSON ).body( json ).when().post( "/customer/save" ).then().log()
+            .everything()
+            .assertThat().statusCode( HttpStatus.SC_CREATED ).and().extract().response().as( Integer.class );
+
+        assertThat( customerRepository.findById( customerId ) ).isNotNull();
+    }
+
+    @Test
+    public void updateShouldReturnStatusOkAndYourIdWhenUpdateCustomer()
+    {
+        final String token = sessionService.login( "teste@teste.com.br", "teste123" );
+
+        final String json = "{\"id\":1 , \"email\":\"teste@teste.com.br\" , \"name\":\"Teste\" , \"password\":\"teste000\"}";
+
+        final Customer customer = given().header( "token", token )
+            .contentType( ContentType.JSON ).body( json ).when().put( "/customer/update" )
+            .then().log().everything()
+            .assertThat().statusCode( HttpStatus.SC_OK ).and().extract().response().as( Customer.class );
+
+        assertThat( customerRepository.findById( 1 ).toString() ).isEqualTo( customer.toString() );
+    }
+
+    @Test
+    public void findShouldReturnStatusOkAndCustomerWhenFindByActiveEmail()
+    {
+        final String json = "{\"email\":\"teste777@teste.com.br\" , \"name\":\"teste777\" , \"password\":\"teste777\"}";
+
+        final Integer customerId = given().contentType( ContentType.JSON ).body( json )
+            .when().post( "/customer/save" ).then().log()
+            .everything()
+            .assertThat().statusCode( HttpStatus.SC_CREATED ).and().extract().response().as( Integer.class );
+
+        final String token = sessionService.login( "teste777@teste.com.br", "teste777" );
+
+        final Customer customer = given().header( "token", token ).contentType( ContentType.JSON )
+            .when().get( "/customer/search/email?email=teste777@teste.com.br" ).then().log()
+            .everything()
+            .assertThat().statusCode( HttpStatus.SC_OK ).and().extract().response().as( Customer.class );
+
+        assertThat( customerRepository.findById( customerId ).equals( customer ) );
+
+    }
+
+    @Test
+    public void findAllShouldReturnCustomersWhenFindAllCustomers()
+    {
+
+    }
+
+    @Test
+    public void inactivateShouldReturnInactiveCustomer()
+    {
+
+    }
+
+}

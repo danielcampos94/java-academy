@@ -1,0 +1,69 @@
+package br.com.neolog.welcomekit.services;
+
+import static org.springframework.security.crypto.bcrypt.BCrypt.gensalt;
+import static org.springframework.security.crypto.bcrypt.BCrypt.hashpw;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import br.com.neolog.welcomekit.exceptions.customer.CustomerDuplicateEmailException;
+import br.com.neolog.welcomekit.exceptions.customer.CustomerNotFoundException;
+import br.com.neolog.welcomekit.models.Customer;
+import br.com.neolog.welcomekit.repository.CustomerRepository;
+
+@Service
+public class CustomerService
+{
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    public Integer save(
+        final Customer customer )
+    {
+        final Customer oldCustomer = customerRepository.findByEmailAndInactiveFalse( customer.getEmail() );
+        if( oldCustomer != null ) {
+            throw new CustomerDuplicateEmailException( "EMAIL=" + customer.getEmail() + " already exists" );
+        }
+        customer.setPassword( encrypt( customer.getPassword() ) );
+        return customerRepository.save( customer ).getId();
+    }
+
+    public Customer update(
+        final Customer customer )
+    {
+        if( ! customerRepository.existsById( customer.getId() ) ) {
+            throw new CustomerNotFoundException( "ID=" + customer.getId() + " not exists" );
+        }
+        return customerRepository.save( customer );
+    }
+
+    public Customer findByActiveEmail(
+        final String email )
+    {
+        return customerRepository.findByEmailAndInactiveFalse( email );
+    }
+
+    public List<Customer> findAll()
+    {
+        return customerRepository.findAll();
+    }
+
+    public void inactivate(
+        final String email )
+    {
+        final Customer customer = customerRepository.findByEmailAndInactiveFalse( email );
+        if( customer == null ) {
+            throw new CustomerNotFoundException( "Not exists this active email" );
+        }
+        customer.setInactive( true );
+        customerRepository.save( customer );
+    }
+
+    public String encrypt(
+        final String password )
+    {
+        return hashpw( password, gensalt() );
+    }
+}

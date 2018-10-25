@@ -1,0 +1,61 @@
+package br.com.neolog.welcomekit;
+
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.apache.http.HttpStatus;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import br.com.neolog.welcomekit.repository.CustomerRepository;
+import br.com.neolog.welcomekit.services.SessionService;
+import io.restassured.http.ContentType;
+
+public class CustomerIntegrationTest
+    extends
+        AbstractIntegrationTest
+{
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private SessionService sessionService;
+
+    @Test
+    public void saveShouldReturnStatusCreatedAndYourIdWhenSaveNewCustomer()
+    {
+
+        final String json = "{\"email\":\"teste123@teste.com.br\" , \"name\":\"teste123\" , \"password\":\"teste1234\"}";
+
+        final Integer customerId = given().contentType( ContentType.JSON ).body( json ).when().post( "/customer/save" ).then().log()
+            .everything()
+            .assertThat().statusCode( HttpStatus.SC_CREATED ).and().extract().response().as( Integer.class );
+
+        assertThat( customerRepository.findById( customerId ) ).isNotNull();
+    }
+
+    @Test
+    public void updateShouldReturnStatusOkAndYourIdWhenUpdateCustomer()
+    {
+
+    }
+
+    @Test
+    public void findShouldReturnStatusOkAndCustomerWhenFindByActiveEmail()
+    {
+
+    }
+
+    @Test
+    public void findAllShouldReturnCustomersWhenFindAllCustomers()
+    {
+
+    }
+
+    @Test
+    public void inactivateShouldReturnInactiveCustomer()
+    {
+
+    }
+
+}

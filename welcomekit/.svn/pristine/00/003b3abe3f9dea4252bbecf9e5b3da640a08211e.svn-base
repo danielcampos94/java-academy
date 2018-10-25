@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<changeSet id="1-pre" author="daniel.campos" dbms="postgresql"
+		runAlways="true">
+
+		<comment>NLG-20815 - Cria function para fazer boolean virar smallint</comment>
+		<sql splitStatements="false">
+			CREATE OR REPLACE FUNCTION
+			booleanToSmallint(v boolean)
+			RETURNS smallint
+			LANGUAGE PLPGSQL
+			IMMUTABLE STRICT
+			COST 1
+			AS $$
+			BEGIN
+			if ( v = true ) then
+			return 1;
+			end if;
+			if ( v = false ) then
+			return 0;
+			end if;
+			raise exception 'Conversion to
+			boolean failed for %', v;
+			END $$;
+
+			DROP CAST IF EXISTS (boolean AS
+			smallint);
+			CREATE CAST (boolean AS
+			smallint) WITH FUNCTION
+			booleanToSmallint(boolean) as implicit;
+		</sql>
+	</changeSet>
+
+	<changeSet id="1" author="daniel.campos">
+
+		<comment>CRIAÇÃO DA TABELA PRODUTO</comment>
+		<createTable tableName="product">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="pk_product_id"
+					deleteCascade="true" />
+			</column>
+			<column name="code" type="int">
+				<constraints nullable="false" unique="true" />
+			</column>
+			<column name="name" type="varchar(30)">
+				<constraints nullable="false" />
+			</column>
+			<column name="price" type="double" />
+			<column name="description" type="varchar(100)">
+				<constraints nullable="true" />
+			</column>
+			<column name="weight" type="double" />
+			<column name="category" type="int">
+				<constraints nullable="false" checkConstraint="fk_product_category" />
+			</column>
+		</createTable>
+
+		<comment>CRIAÇÃO DA TABELA CATEGORIA</comment>
+		<createTable tableName="product_category">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="pk_product_category_id" />
+			</column>
+			<column name="code" type="int">
+				<constraints nullable="false" unique="true" />
+			</column>
+			<column name="name" type="varchar(30)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<comment>CRIAÇÃO DA TABELA ESTOQUE</comment>
+		<createTable tableName="stock">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="pk_stock_id" />
+			</column>
+			<column name="product" type="int">
+				<constraints nullable="false" checkConstraint="fk_stock_product" />
+			</column>
+			<column name="quantity" type="int" />
+
+		</createTable>
+
+		<comment>CRIAÇÃO DAS SEQUENCES DAS TABELAS PRODUTO,CATEGORIA,ESTOQUE</comment>
+		<createSequence sequenceName="product_sequence"
+			startValue="1" incrementBy="1" />
+		<createSequence sequenceName="product_category_sequence"
+			startValue="1" incrementBy="1" />
+		<createSequence sequenceName="stock_sequence"
+			startValue="1" incrementBy="1" />
+
+		<comment>CRIAÇÃO DAS CHAVES ESTRANGEIRAS</comment>
+		<addForeignKeyConstraint baseColumnNames="category"
+			baseTableName="product" constraintName="fk_product_category"
+			referencedColumnNames="id" referencedTableName="product_category" />
+
+		<addForeignKeyConstraint baseColumnNames="product"
+			baseTableName="stock" constraintName="fk_stock_product" onDelete="CASCADE"
+			referencedColumnNames="id" referencedTableName="product" />
+
+	</changeSet>
+
+	<changeSet id="2" author="daniel.campos">
+
+		<comment>INSERÇÕES NA TABELA CATEGORIA</comment>
+		<insert tableName="product_category">
+			<column name="id" valueSequenceNext="product_category_sequence" />
+			<column name="code" value="10" />
+			<column name="name" value="Eletronicos" />
+		</insert>
+
+		<insert tableName="product_category">
+			<column name="id" valueSequenceNext="product_category_sequence" />
+			<column name="code" value="11" />
+			<column name="name" value="Acessorios para celular" />
+		</insert>
+
+		<comment>INSERÇÕES NA TABELA PRODUTO</comment>
+		<insert tableName="product">
+			<column name="id" valueSequenceNext="product_sequence" />
+			<column name="code" value="10" />
+			<column name="name" value="TV" />
+			<column name="price" value="2000.0" />
+			<column name="description" value="SMART TV 4K" />
+			<column name="weight" value="30.0" />
+			<column name="category" value="1" />
+		</insert>
+
+		<insert tableName="product">
+			<column name="id" valueSequenceNext="product_sequence" />
+			<column name="code" value="11" />
+			<column name="name" value="Celular" />
+			<column name="price" value="4000.0" />
+			<column name="description" value="IphoneX" />
+			<column name="weight" value="0.8" />
+			<column name="category" value="1" />
+		</insert>
+
+		<insert tableName="product">
+			<column name="id" valueSequenceNext="product_sequence" />
+			<column name="code" value="500" />
+			<column name="name" value="Celular" />
+			<column name="price" value="4000.0" />
+			<column name="description" value="IphoneX" />
+			<column name="weight" value="0.8" />
+			<column name="category" value="1" />
+		</insert>
+
+		<insert tableName="product">
+			<column name="id" valueSequenceNext="product_sequence" />
+			<column name="code" value="600" />
+			<column name="name" value="Celular" />
+			<column name="price" value="4000.0" />
+			<column name="description" value="IphoneX" />
+			<column name="weight" value="0.8" />
+			<column name="category" value="1" />
+		</insert>
+
+		<comment>INSERÇÕES NA TABELA ESTOQUE</comment>
+		<insert tableName="stock">
+			<column name="id" valueSequenceNext="stock_sequence" />
+			<column name="product" value="2" />
+			<column name="quantity" value="9000" />
+		</insert>
+
+		<insert tableName="stock">
+			<column name="id" valueSequenceNext="stock_sequence" />
+			<column name="product" value="1" />
+			<column name="quantity" value="0" />
+		</insert>
+
+		<insert tableName="stock">
+			<column name="id" valueSequenceNext="stock_sequence" />
+			<column name="product" value="3" />
+			<column name="quantity" value="1000" />
+		</insert>
+
+
+	</changeSet>
+
+	<changeSet id="3" author="daniel.campos">
+
+		<comment>CRIAÇÃO DA TABELA USUARIO</comment>
+		<createTable tableName="customer">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="pk_customer_id" />
+			</column>
+			<column name="email" type="varchar">
+				<constraints nullable="false" />
+			</column>
+			<column name="name" type="varchar">
+				<constraints nullable="false" />
+			</column>
+			<column name="password" type="varchar">
+				<constraints nullable="false" />
+			</column>
+			<column name="inactive" type="tinyint">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<comment>CRIAÇÃO DA SEQUENCE DE USUARIO</comment>
+		<createSequence sequenceName="customer_sequence"
+			startValue="1" incrementBy="1" />
+
+	</changeSet>
+
+	<changeSet id="4" author="daniel.campos">
+		<sql dbms="h2">CREATE TYPE status AS ENUM
+			('ACTIVE','CANCELLED','FINISHED')</sql>
+
+		<comment>CRIAÇÃO DA TABELA CARRINHO</comment>
+		<createTable tableName="cart">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="pk_cart_id" />
+			</column>
+			<column name="customer" type="int">
+				<constraints nullable="false" />
+			</column>
+			<column name="total_value" type="bigint" />
+			<column name="cart_status" type="status">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<comment>CRIAÇÃO DA SEQUENCE DO CARRINHO</comment>
+		<createSequence sequenceName="cart_sequence"
+			startValue="1" incrementBy="1" />
+
+		<comment>CRIAÇÃO DA CHAVE ESTRANGEIRA DA TABELA CARRINHO</comment>
+		<addForeignKeyConstraint baseColumnNames="customer"
+			baseTableName="cart" constraintName="fk_cart_customer"
+			referencedColumnNames="id" referencedTableName="customer" />
+	</changeSet>
+
+	<changeSet id="5" author="daniel.campos">
+
+		<comment>CRIAÇÃO DA TABELA ITEM DO CARRINHO</comment>
+		<createTable tableName="cart_item">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="pk_cart_item_id" />
+			</column>
+			<column name="product" type="int">
+				<constraints unique="true" nullable="false" />
+			</column>
+			<column name="quantity" type="bigint" />
+			<column name="cart" type="int">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<comment>CRIAÇÃO DA SEQUENCE ITEM DO CARRINHO</comment>
+		<createSequence sequenceName="cart_item_sequence"
+			startValue="1" incrementBy="1" />
+
+		<comment>CRIAÇÃO DAS CHAVES ESTRANGEIRAS NA TABELA ITEM DO CARRINHO</comment>
+		<addForeignKeyConstraint baseColumnNames="product"
+			baseTableName="cart_item" constraintName="fk_cart_item_product"
+			referencedColumnNames="id" referencedTableName="product" />
+
+		<addForeignKeyConstraint baseColumnNames="cart"
+			baseTableName="cart_item" constraintName="fk_cart_item_cart"
+			referencedColumnNames="id" referencedTableName="cart" />
+	</changeSet>
+
+	<changeSet id="6" author="daniel.campos">
+
+		<comment>NLG-20836 - Criação de unique com os campos "email" e "inactive"</comment>
+		<sql dbms="postgresql">
+			CREATE UNIQUE INDEX customer_email ON customer (email,
+			inactive) WHERE (inactive = 0);
+		</sql>
+	</changeSet>
+
+	<changeSet id="7" author="daniel.campos">
+
+		<comment>NLG-20837 - Criação de unique com os campos "customer" e "status"</comment>
+		<sql dbms="postgresql">
+			CREATE UNIQUE INDEX cart_active ON cart (customer,
+			status) WHERE (status = 'ACTIVE');
+		</sql>
+	</changeSet>
+
+	<changeSet id="8" author="daniel.campos">
+		<comment>Criação da tabela Session</comment>
+		<createTable tableName="session">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="pk_session_id" />
+			</column>
+			<column name="token" type="varchar(50)"></column>
+			<column name="expiration_date" type="timestamp" />
+			<column name="login_date" type="timestamp" />
+			<column name="customer" type="int">
+			</column>
+		</createTable>
+
+		<comment>CRIAÇÃO DA SEQUENCE DE SESSÃO</comment>
+		<createSequence sequenceName="session_sequence"
+			startValue="1" incrementBy="1" />
+
+		<comment>CRIAÇÃO DA CHAVE ESTRANGEIRA NA TABELA SESSÃO</comment>
+		<addForeignKeyConstraint baseColumnNames="customer"
+			baseTableName="session" constraintName="fk_session_customer"
+			referencedColumnNames="id" referencedTableName="customer" />
+
+	</changeSet>
+
+	<changeSet id="9" author="daniel.campos">
+		<comment>INSERIR CUSTOMER</comment>
+		<insert tableName="customer">
+			<column name="id" valueSequenceNext="customer_sequence" />
+			<column name="email" value="teste@teste.com.br" />
+			<column name="name" value="Teste" />
+			<column name="password"
+				value="$2a$10$YeodjgnmXeFhfNkB.TuX6eY1T/IYMtV8rOTHlsjt.7Eq4XvTZplGG" />
+			<column name="inactive" value="0" />
+		</insert>
+	</changeSet>
+</databaseChangeLog>

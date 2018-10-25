@@ -31,7 +31,7 @@ public class StockController
         @RequestBody @Valid final Stock stock )
     {
         final Stock stockQuantity = stockService.save( stock );
-        return new ResponseEntity<Stock>( stockQuantity, HttpStatus.CREATED );
+        return new ResponseEntity<>( stockQuantity, HttpStatus.CREATED );
     }
 
     @DeleteMapping( "remove/{id}" )
@@ -39,7 +39,7 @@ public class StockController
         @PathVariable( "id" ) final Integer id )
     {
         final Integer stockId = stockService.delete( id );
-        return new ResponseEntity<Integer>( stockId, HttpStatus.OK );
+        return new ResponseEntity<>( stockId, HttpStatus.OK );
     }
 
     @PutMapping( "decrease/{code}/{quantity}" )
@@ -48,7 +48,7 @@ public class StockController
         @PathVariable( "quantity" ) final int quantity )
     {
         final Stock totalStock = stockService.decreaseStock( code, quantity );
-        return new ResponseEntity<Stock>( totalStock, HttpStatus.OK );
+        return new ResponseEntity<>( totalStock, HttpStatus.OK );
     }
 
     @PutMapping( "increase/{codeProduct}/{quantity}" )
@@ -57,7 +57,7 @@ public class StockController
         @PathVariable( "quantity" ) final int quantity )
     {
         final Stock totalStock = stockService.increaseStock( code, quantity );
-        return new ResponseEntity<Stock>( totalStock, HttpStatus.OK );
+        return new ResponseEntity<>( totalStock, HttpStatus.OK );
     }
 
     @GetMapping( "search/quantity/code/{codeProduct}" )
@@ -65,7 +65,7 @@ public class StockController
         @PathVariable( "codeProduct" ) final int codeProduct )
     {
         final Integer quantityProduct = stockService.findQuantityStockByProductCode( codeProduct );
-        return new ResponseEntity<Integer>( quantityProduct, HttpStatus.OK );
+        return new ResponseEntity<>( quantityProduct, HttpStatus.OK );
     }
 
 }

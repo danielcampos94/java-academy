@@ -42,7 +42,7 @@ public class CustomerController
         return new ResponseEntity<>( customer, HttpStatus.OK );
     }
 
-    @GetMapping( "search/email" )
+    @GetMapping( "/search/email" )
     public ResponseEntity<Customer> findByEmail(
         @RequestParam( "email" ) final String email )
     {
@@ -50,17 +50,16 @@ public class CustomerController
         return new ResponseEntity<>( customer, HttpStatus.OK );
     }
 
-    @GetMapping( "search/all" )
+    @GetMapping( "/search/all" )
     public List<Customer> findAll()
     {
         return customerSevice.findAll();
     }
 
-    @PutMapping( "inactivate/email" )
-    public ResponseEntity<String> inactivate(
-        @RequestParam( "email" ) final String email )
+    @PutMapping( "/inactivate" )
+    public ResponseEntity<Customer> inactivate()
     {
-        customerSevice.inactivate( email );
-        return new ResponseEntity<>( email + " inactive", HttpStatus.OK );
+        final Customer customer = customerSevice.inactivate();
+        return new ResponseEntity<>( customer, HttpStatus.OK );
     }
 }

@@ -1,0 +1,80 @@
+package br.com.neolog.welcomekit;
+
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.apache.http.HttpStatus;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import br.com.neolog.welcomekit.models.CartItem;
+import br.com.neolog.welcomekit.repository.CartItemRepository;
+import br.com.neolog.welcomekit.services.CartService;
+import br.com.neolog.welcomekit.services.SessionService;
+import io.restassured.http.ContentType;
+
+public class CartIntegrationTest
+    extends
+        AbstractIntegrationTest
+{
+    @Autowired
+    private CartService cartService;
+
+    @Autowired
+    private SessionService sessionService;
+
+    @Autowired
+    private CartItemRepository itemRepository;
+
+    @Test
+    public void addItemShouldReturnStatusOKAndCreatedItemWhenAddNewItem()
+    {
+        final String token = sessionService.login( "cart@teste.com.br", "cart" );
+
+        final String json = "{\"product\":{\"code\":11}, \"quantity\":1000, \"cart\":{\"customer\":{\"email\":\"cart@teste.com.br\"}}}";
+
+        final CartItem item = given().header( "token", token ).contentType( ContentType.JSON ).body( json )
+            .when().post( "/cart/add/item" )
+            .then().log()
+            .everything()
+            .assertThat().statusCode( HttpStatus.SC_OK ).and().extract().response().as( CartItem.class );
+
+        assertThat( item ).isNotNull();
+    }
+
+    @Test
+    public void removeItem()
+    {
+        
+    }
+
+    @Test
+    public void removeItemQuantity()
+    {
+        
+    }
+
+    @Test
+    public void searchAllByCartId()
+    {
+        
+    }
+
+    @Test
+    public void getCurrentPrice()
+    {
+        
+    }
+
+    @Test
+    public void cancel()
+    {
+        
+    }
+
+    @Test
+    public void checkout()
+    {
+        
+    }
+}

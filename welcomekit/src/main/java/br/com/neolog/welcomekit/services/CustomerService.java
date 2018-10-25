@@ -1,5 +1,6 @@
 package br.com.neolog.welcomekit.services;
 
+import static br.com.neolog.welcomekit.CustomerLocal.getCurrentCustomerId;
 import static org.springframework.security.crypto.bcrypt.BCrypt.gensalt;
 import static org.springframework.security.crypto.bcrypt.BCrypt.hashpw;
 
@@ -22,7 +23,7 @@ public class CustomerService
     public Integer save(
         final Customer customer )
     {
-        final Customer oldCustomer = findByActiveEmail( customer.getEmail() );
+        final Customer oldCustomer = customerRepository.findByEmailAndInactiveFalse( customer.getEmail() );
         if( oldCustomer != null ) {
             throw new CustomerDuplicateEmailException( "EMAIL=" + customer.getEmail() + " already exists" );
         }
@@ -35,6 +36,9 @@ public class CustomerService
     {
         if( ! customerRepository.existsById( customer.getId() ) ) {
             throw new CustomerNotFoundException( "ID=" + customer.getId() + " not exists" );
+        }
+        if( customer.getId() != getCurrentCustomerId() ) {
+            throw new RuntimeException( "You can only change your account." );
         }
         return customerRepository.save( customer );
     }
@@ -50,20 +54,19 @@ public class CustomerService
         return customerRepository.findAll();
     }
 
-    public void inactivate(
-        final String email )
+    public Customer inactivate()
     {
-        final Customer customer = findByActiveEmail( email );
+        final Customer customer = customerRepository.findById( getCurrentCustomerId() );
         if( customer == null ) {
             throw new CustomerNotFoundException( "Not exists this active email" );
         }
         customer.setInactive( true );
-        customerRepository.save( customer );
+        return customerRepository.save( customer );
     }
 
-    private String encrypt(
+    public String encrypt(
         final String password )
     {
-        return new String( hashpw( password, gensalt() ) );
+        return hashpw( password, gensalt() );
     }
 }

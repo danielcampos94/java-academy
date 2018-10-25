@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.neolog.welcomekit.models.Cart;
 import br.com.neolog.welcomekit.models.CartItem;
 import br.com.neolog.welcomekit.services.CartService;
 
@@ -42,7 +43,7 @@ public class CartController
     @PutMapping( "/remove/item/code/quantity" )
     public ResponseEntity<CartItem> removeQuantityItem(
         @RequestParam( "productCode" ) final Integer productCode,
-        @RequestParam final int quantity )
+        @RequestParam( "quantity" ) final int quantity )
     {
         return ResponseEntity.ok().body( cartService.removeQuantityItem( productCode, quantity ) );
     }
@@ -60,4 +61,18 @@ public class CartController
         return ResponseEntity.ok().body( cartService.getCurrentPrice() );
     }
 
+    @PutMapping( "/cancel" )
+    public ResponseEntity<Cart> cancelCart()
+    {
+        final Cart cart = cartService.cancelCart();
+        return ResponseEntity.ok().body( cart );
+    }
+
+    @PutMapping( "/checkout" )
+    public ResponseEntity<Cart> checkout()
+    {
+        final Cart cart = cartService.getActiveCart();
+        cartService.checkout();
+        return ResponseEntity.ok().body( cart );
+    }
 }

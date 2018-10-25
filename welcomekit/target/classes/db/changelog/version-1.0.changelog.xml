@@ -107,14 +107,20 @@
 		<comment>INSERÇÕES NA TABELA CATEGORIA</comment>
 		<insert tableName="product_category">
 			<column name="id" valueSequenceNext="product_category_sequence" />
-			<column name="code" value="10" />
+			<column name="code" value="1000" />
 			<column name="name" value="Eletronicos" />
 		</insert>
 
 		<insert tableName="product_category">
 			<column name="id" valueSequenceNext="product_category_sequence" />
-			<column name="code" value="11" />
+			<column name="code" value="1001" />
 			<column name="name" value="Acessorios para celular" />
+		</insert>
+
+		<insert tableName="product_category">
+			<column name="id" valueSequenceNext="product_category_sequence" />
+			<column name="code" value="1002" />
+			<column name="name" value="Esporte" />
 		</insert>
 
 		<comment>INSERÇÕES NA TABELA PRODUTO</comment>
@@ -140,7 +146,7 @@
 
 		<insert tableName="product">
 			<column name="id" valueSequenceNext="product_sequence" />
-			<column name="code" value="500" />
+			<column name="code" value="12" />
 			<column name="name" value="Celular" />
 			<column name="price" value="4000.0" />
 			<column name="description" value="IphoneX" />
@@ -150,12 +156,22 @@
 
 		<insert tableName="product">
 			<column name="id" valueSequenceNext="product_sequence" />
-			<column name="code" value="600" />
+			<column name="code" value="13" />
 			<column name="name" value="Celular" />
 			<column name="price" value="4000.0" />
 			<column name="description" value="IphoneX" />
 			<column name="weight" value="0.8" />
 			<column name="category" value="1" />
+		</insert>
+
+		<insert tableName="product">
+			<column name="id" valueSequenceNext="product_sequence" />
+			<column name="code" value="14" />
+			<column name="name" value="Bola" />
+			<column name="price" value="50.0" />
+			<column name="description" value="Bola redonda" />
+			<column name="weight" value="1.0" />
+			<column name="category" value="3" />
 		</insert>
 
 		<comment>INSERÇÕES NA TABELA ESTOQUE</comment>
@@ -168,13 +184,19 @@
 		<insert tableName="stock">
 			<column name="id" valueSequenceNext="stock_sequence" />
 			<column name="product" value="1" />
-			<column name="quantity" value="0" />
+			<column name="quantity" value="1" />
 		</insert>
 
 		<insert tableName="stock">
 			<column name="id" valueSequenceNext="stock_sequence" />
 			<column name="product" value="3" />
 			<column name="quantity" value="1000" />
+		</insert>
+
+		<insert tableName="stock">
+			<column name="id" valueSequenceNext="stock_sequence" />
+			<column name="product" value="5" />
+			<column name="quantity" value="5" />
 		</insert>
 
 
@@ -208,7 +230,9 @@
 	</changeSet>
 
 	<changeSet id="4" author="daniel.campos">
-		<sql dbms="h2">CREATE TYPE status AS ENUM ('ACTIVE','CANCELLED','FINISHED')</sql>
+		<sql dbms="h2">CREATE TYPE status AS ENUM
+			('ACTIVE','CANCELLED','FINISHED')
+		</sql>
 
 		<comment>CRIAÇÃO DA TABELA CARRINHO</comment>
 		<createTable tableName="cart">
@@ -242,7 +266,7 @@
 				<constraints primaryKey="true" primaryKeyName="pk_cart_item_id" />
 			</column>
 			<column name="product" type="int">
-				<constraints unique="true" nullable="false" />
+				<constraints nullable="false" />
 			</column>
 			<column name="quantity" type="bigint" />
 			<column name="cart" type="int">
@@ -280,5 +304,183 @@
 			CREATE UNIQUE INDEX cart_active ON cart (customer,
 			status) WHERE (status = 'ACTIVE');
 		</sql>
+	</changeSet>
+
+	<changeSet id="8" author="daniel.campos">
+		<comment>Criação da tabela Session</comment>
+		<createTable tableName="session">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" primaryKeyName="pk_session_id" />
+			</column>
+			<column name="token" type="varchar(50)"></column>
+			<column name="expiration_date" type="datetime" />
+			<column name="login_date" type="datetime" />
+			<column name="customer" type="int">
+			</column>
+		</createTable>
+
+		<comment>CRIAÇÃO DA SEQUENCE DE SESSÃO</comment>
+		<createSequence sequenceName="session_sequence"
+			startValue="1" incrementBy="1" />
+
+		<comment>CRIAÇÃO DA CHAVE ESTRANGEIRA NA TABELA SESSÃO</comment>
+		<addForeignKeyConstraint baseColumnNames="customer"
+			baseTableName="session" constraintName="fk_session_customer"
+			referencedColumnNames="id" referencedTableName="customer" />
+
+	</changeSet>
+
+	<changeSet id="9" author="daniel.campos">
+		<comment>INSERIR CUSTOMER</comment>
+		<comment>SENHA UPDATE</comment>
+		<insert tableName="customer">
+			<column name="id" valueSequenceNext="customer_sequence" />
+			<column name="email" value="update@teste.com.br" />
+			<column name="name" value="Update" />
+			<column name="password"
+				value="$2a$10$wXR4S0JoNz0USC4vROZ.gOiaBSv5dqOMB2OXIjoIkiI1FDw/UBnge" />
+			<column name="inactive" value="0" />
+		</insert>
+		<comment>SENHA FIND</comment>
+		<insert tableName="customer">
+			<column name="id" valueSequenceNext="customer_sequence" />
+			<column name="email" value="find@teste.com.br" />
+			<column name="name" value="FindByEmail" />
+			<column name="password"
+				value="$2a$10$mjYGxfjNGThJOC3VXwbrTeKG/z35.Lz.rkLd.DYGLAe66ef9SHtAW" />
+			<column name="inactive" value="0" />
+		</insert>
+		<comment>SENHA FINDALL</comment>
+		<insert tableName="customer">
+			<column name="id" valueSequenceNext="customer_sequence" />
+			<column name="email" value="findall@teste.com.br" />
+			<column name="name" value="FindAll" />
+			<column name="password"
+				value="$2a$10$Bb9qoU6TnyR.H0zKKIPh9uybmcJg1LsFjhFhqZuoqcNStqzBo/0oe" />
+			<column name="inactive" value="0" />
+		</insert>
+		<comment>SENHA INACTIVE</comment>
+		<insert tableName="customer">
+			<column name="id" valueSequenceNext="customer_sequence" />
+			<column name="email" value="inactive@teste.com.br" />
+			<column name="name" value="Inactive" />
+			<column name="password"
+				value="$2a$10$GgHbthbJLxG00Zy8rD168.RXTSD6VsE1TvlvLo9BT54BmF89pHzPO" />
+			<column name="inactive" value="0" />
+		</insert>
+		<comment>SENHA CART</comment>
+		<insert tableName="customer">
+			<column name="id" valueSequenceNext="customer_sequence" />
+			<column name="email" value="cart@teste.com.br" />
+			<column name="name" value="Cart" />
+			<column name="password"
+				value="$2a$10$ltgWm8eWQltJCx0iqyk3xOKx3ePsZMT5v7w0QTxgLMWcsvHzoodZi" />
+			<column name="inactive" value="0" />
+		</insert>
+		<comment>SENHA CART USADO NO SESSION INTEGRATION TEST</comment>
+		<insert tableName="customer">
+			<column name="id" valueSequenceNext="customer_sequence" />
+			<column name="email" value="session@teste.com.br" />
+			<column name="name" value="Session" />
+			<column name="password"
+				value="$2a$10$ltgWm8eWQltJCx0iqyk3xOKx3ePsZMT5v7w0QTxgLMWcsvHzoodZi" />
+			<column name="inactive" value="0" />
+		</insert>
+	</changeSet>
+
+	<changeSet id="10" author="daniel.campos">
+		<comment>INSERÇÃO NA TABELA CART</comment>
+		<insert tableName="cart">
+			<column name="id" valueSequenceNext="cart_sequence"></column>
+			<column name="customer" value="5"></column>
+			<column name="total_value" value="0"></column>
+			<column name="cart_status" value="ACTIVE"></column>
+		</insert>
+		<insert tableName="cart">
+			<column name="id" valueSequenceNext="cart_sequence"></column>
+			<column name="customer" value="3"></column>
+			<column name="total_value" value="0"></column>
+			<column name="cart_status" value="ACTIVE"></column>
+		</insert>
+		<insert tableName="cart">
+			<column name="id" valueSequenceNext="cart_sequence"></column>
+			<column name="customer" value="2"></column>
+			<column name="total_value" value="0"></column>
+			<column name="cart_status" value="ACTIVE"></column>
+		</insert>
+		<insert tableName="cart">
+			<column name="id" valueSequenceNext="cart_sequence"></column>
+			<column name="customer" value="1"></column>
+			<column name="total_value" value="0"></column>
+			<column name="cart_status" value="ACTIVE"></column>
+		</insert>
+	</changeSet>
+
+	<changeSet id="11" author="daniel.campos">
+		<comment>INSERÇÕES NA TABELA CART_ITEM</comment>
+
+		<comment>USADO NO TESTE DE REMOVER ITEM</comment>
+		<insert tableName="cart_item">
+			<column name="id" valueSequenceNext="cart_item_sequence"></column>
+			<column name="product" value="1"></column>
+			<column name="quantity" value="1"></column>
+			<column name="cart" value="1"></column>
+		</insert>
+
+		<comment>USADO NO TESTE DE REMOVER QUANTIDADE DO ITEM</comment>
+		<insert tableName="cart_item">
+			<column name="id" valueSequenceNext="cart_item_sequence" />
+			<column name="product" value="2" />
+			<column name="quantity" value="500" />
+			<column name="cart" value="1" />
+		</insert>
+
+		<comment>USADO NO TESTE DE CHECKOUT DE CART</comment>
+		<insert tableName="cart_item">
+			<column name="id" valueSequenceNext="cart_item_sequence" />
+			<column name="product" value="5" />
+			<column name="quantity" value="5" />
+			<column name="cart" value="3" />
+		</insert>
+
+		<comment>USADO PARA DAR ERRO NO CHECKOUT DE CART</comment>
+		<insert tableName="cart_item">
+			<column name="id" valueSequenceNext="cart_item_sequence" />
+			<column name="product" value="5" />
+			<column name="quantity" value="5" />
+			<column name="cart" value="4" />
+		</insert>
+	</changeSet>
+
+	<changeSet id="12" author="daniel.campos">
+		<comment>INSERÇÃO DE UMA SESSION PARA USAR NO CART INTEGRATION TEST</comment>
+		<insert tableName="session">
+			<column name="id" valueSequenceNext="session_sequence" />
+			<column name="token" value="TOKENVALUE" />
+			<column name="expiration_date" value="2025-10-19 16:20:00.00"></column>
+			<column name="login_date" value="now()"></column>
+			<column name="customer" value="5"></column>
+		</insert>
+		<insert tableName="session">
+			<column name="id" valueSequenceNext="session_sequence" />
+			<column name="token" value="CANCELCART" />
+			<column name="expiration_date" value="2025-10-19 16:20:00.00"></column>
+			<column name="login_date" value="now()"></column>
+			<column name="customer" value="3"></column>
+		</insert>
+		<insert tableName="session">
+			<column name="id" valueSequenceNext="session_sequence" />
+			<column name="token" value="CHECKOUTCART" />
+			<column name="expiration_date" value="2025-10-19 16:20:00.00"></column>
+			<column name="login_date" value="now()"></column>
+			<column name="customer" value="2"></column>
+		</insert>
+		<insert tableName="session">
+			<column name="id" valueSequenceNext="session_sequence" />
+			<column name="token" value="CHECKOUTCART2" />
+			<column name="expiration_date" value="2025-10-19 16:20:00.00"></column>
+			<column name="login_date" value="now()"></column>
+			<column name="customer" value="1"></column>
+		</insert>
 	</changeSet>
 </databaseChangeLog>

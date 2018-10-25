@@ -1,0 +1,46 @@
+package br.com.neolog.welcomekit.services;
+
+import static org.joda.time.DateTime.now;
+
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.stereotype.Service;
+
+import br.com.neolog.welcomekit.exceptions.customer.CustomerInvalidPasswordException;
+import br.com.neolog.welcomekit.exceptions.customer.CustomerNotFoundException;
+import br.com.neolog.welcomekit.models.Customer;
+import br.com.neolog.welcomekit.models.Session;
+import br.com.neolog.welcomekit.repository.SessionRepository;
+
+@Service
+public class SessionService
+{
+    @Autowired
+    private CustomerService customerService;
+
+    @Autowired
+    private SessionRepository sessionRepository;
+
+    public String login(
+        final String email,
+        final String password )
+    {
+        final Customer customer = customerService.findByActiveEmail( email );
+        if( customer == null ) {
+            throw new CustomerNotFoundException( "This customer not exists" );
+        }
+        if( ! BCrypt.checkpw( password, customer.getPassword() ) ) {
+            throw new CustomerInvalidPasswordException( "Invalid password" );
+        }
+        final String token = getToken();
+        sessionRepository.save( new Session( token, now(), now().plusHours( 2 ), customer ) );
+        return token;
+    }
+
+    private String getToken()
+    {
+        return UUID.randomUUID().toString();
+    }
+}
