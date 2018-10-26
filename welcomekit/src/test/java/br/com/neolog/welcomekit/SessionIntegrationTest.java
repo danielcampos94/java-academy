@@ -7,6 +7,7 @@ import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import br.com.neolog.welcomekit.exceptions.ErrorResponse;
 import br.com.neolog.welcomekit.models.Session;
 import br.com.neolog.welcomekit.repository.SessionRepository;
 import io.restassured.http.ContentType;
@@ -42,5 +43,27 @@ public class SessionIntegrationTest
         final Session sessionAfterLogout = sessionRepository.findByToken( "CHECKOUTCART2" );
 
         assertThat( session.getExpirationDate() ).isGreaterThan( sessionAfterLogout.getExpirationDate() );
+    }
+
+    @Test
+    public void loginShouldThrowCustomerNotFoundExceptionWhen()
+    {
+        final ErrorResponse response = given().contentType( ContentType.JSON ).when()
+            .post( "/session/login?email=item@teste.com.br&password=cart" ).then().log()
+            .everything()
+            .assertThat().statusCode( HttpStatus.SC_NOT_FOUND ).and().extract().response().as( ErrorResponse.class );
+
+        assertThat( response.getMessage() ).contains( "This customer not exists" );
+    }
+
+    @Test
+    public void loginShouldThrowCustomerInvalidPasswordExceptionWhen()
+    {
+        final ErrorResponse response = given().contentType( ContentType.JSON ).when()
+            .post( "/session/login?email=cart@teste.com.br&password=cartItem" ).then().log()
+            .everything()
+            .assertThat().statusCode( HttpStatus.SC_BAD_REQUEST ).and().extract().response().as( ErrorResponse.class );
+
+        assertThat( response.getMessage() ).contains( "Invalid password" );
     }
 }

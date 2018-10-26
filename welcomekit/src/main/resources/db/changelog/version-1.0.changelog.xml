@@ -173,6 +173,24 @@
 			<column name="weight" value="1.0" />
 			<column name="category" value="3" />
 		</insert>
+		<insert tableName="product">
+			<column name="id" valueSequenceNext="product_sequence" />
+			<column name="code" value="15" />
+			<column name="name" value="Carro" />
+			<column name="price" value="50.0" />
+			<column name="description" value="Bola redonda" />
+			<column name="weight" value="1.0" />
+			<column name="category" value="2" />
+		</insert>
+		<insert tableName="product">
+			<column name="id" valueSequenceNext="product_sequence" />
+			<column name="code" value="16" />
+			<column name="name" value="Bola" />
+			<column name="price" value="50.0" />
+			<column name="description" value="Bola redonda" />
+			<column name="weight" value="1.0" />
+			<column name="category" value="3" />
+		</insert>
 
 		<comment>INSERÇÕES NA TABELA ESTOQUE</comment>
 		<insert tableName="stock">
@@ -197,6 +215,12 @@
 			<column name="id" valueSequenceNext="stock_sequence" />
 			<column name="product" value="5" />
 			<column name="quantity" value="5" />
+		</insert>
+
+		<insert tableName="stock">
+			<column name="id" valueSequenceNext="stock_sequence" />
+			<column name="product" value="4" />
+			<column name="quantity" value="0" />
 		</insert>
 
 
@@ -449,6 +473,14 @@
 			<column name="product" value="5" />
 			<column name="quantity" value="5" />
 			<column name="cart" value="4" />
+		</insert>
+
+		<comment>USADO PARA DAR ERRO NO CHECKOUT DE CART</comment>
+		<insert tableName="cart_item">
+			<column name="id" valueSequenceNext="cart_item_sequence" />
+			<column name="product" value="4" />
+			<column name="quantity" value="5" />
+			<column name="cart" value="1" />
 		</insert>
 	</changeSet>
 

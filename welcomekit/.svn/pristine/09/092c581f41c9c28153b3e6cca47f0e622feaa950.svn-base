@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -95,44 +94,4 @@ public class CustomerIntegrationTest
         assertThat( customer ).extracting( "inactive" ).contains( true );
     }
 
-    @Test
-    public void shouldThrowCustomerDuplicateEmailExceptionWhenSaveDuplicateActiveEmail()
-    {
-
-        final String json = "{\"email\":\"findall@teste.com.br\" , \"name\":\"FindAll\" , \"password\":\"findall\"}";
-
-        given().contentType( ContentType.JSON ).body( json ).when().post( "/customer/save" ).then().log()
-            .everything()
-            .assertThat().statusCode( HttpStatus.SC_METHOD_NOT_ALLOWED ).and()
-            .body( "message", Matchers.equalTo( "EMAIL=findall@teste.com.br already exists" ) );
-
-    }
-
-    @Test
-    public void shouldTrhowCustomerNotFoundExceptionWhenUpdateCustomerIdNotValid()
-    {
-        final String token = sessionService.login( "update@teste.com.br", "update" );
-
-        final String json = "{\"id\":500 , \"email\":\"update@teste.com.br\" , \"name\":\"Update1\" , \"password\":\"update\"}";
-
-        given().header( "token", token )
-            .contentType( ContentType.JSON ).body( json ).when().put( "/customer/update" )
-            .then().log().everything()
-            .assertThat().statusCode( HttpStatus.SC_NOT_FOUND ).and()
-            .body( "message", Matchers.contains( "ID=500 not exists" ) );
-    }
-
-    @Test
-    public void shouldTrhowCustomerInvalidAccessExceptionWhenTryUpdateOtherCustomer()
-    {
-        final String token = sessionService.login( "update@teste.com.br", "update" );
-
-        final String json = "{\"id\":5 , \"email\":\"update@teste.com.br\" , \"name\":\"Update1\" , \"password\":\"update\"}";
-
-        given().header( "token", token )
-            .contentType( ContentType.JSON ).body( json ).when().put( "/customer/update" )
-            .then().log().everything()
-            .assertThat().statusCode( HttpStatus.SC_METHOD_NOT_ALLOWED ).and()
-            .body( "message", Matchers.equalTo( "You can only change your account." ) );
-    }
 }

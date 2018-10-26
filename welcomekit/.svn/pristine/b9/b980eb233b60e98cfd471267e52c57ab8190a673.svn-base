@@ -53,7 +53,7 @@ public class StockIntegrationTest
             .then().log().everything()
             .assertThat()
             .statusCode( HttpStatus.SC_NOT_FOUND )
-            .and().body( "message", Matchers.contains( "This product not exists" ) );
+            .and().body( "message", Matchers.equalTo( "This product not exists" ) );
     }
 
     @Test
@@ -82,7 +82,7 @@ public class StockIntegrationTest
     {
         given().header( "token", "TOKENVALUE" ).contentType( ContentType.JSON ).when().put( "/stock/decrease/700/300" ).then().log()
             .everything()
-            .assertThat().statusCode( HttpStatus.SC_NOT_FOUND ).and().body( "message", Matchers.contains(
+            .assertThat().statusCode( HttpStatus.SC_NOT_FOUND ).and().body( "message", Matchers.equalTo(
                 "This product not exists" ) );
     }
 
@@ -123,7 +123,7 @@ public class StockIntegrationTest
             .then().log().everything()
             .assertThat()
             .statusCode( HttpStatus.SC_NOT_FOUND ).and()
-            .body( "message", Matchers.contains( "CODE_PRODUCT=90 not exists" ) );
+            .body( "message", Matchers.equalTo( "CODE_PRODUCT=90 not exists" ) );
 
     }
 

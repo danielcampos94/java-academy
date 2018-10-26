@@ -1,5 +1,7 @@
 package br.com.neolog.welcomekit;
 
+import java.lang.reflect.Type;
+
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,13 @@ public abstract class AbstractIntegrationTest
 
         RestAssured.config = RestAssuredConfig.config()
             .objectMapperConfig( ObjectMapperConfig.objectMapperConfig().jackson2ObjectMapperFactory( new Jackson2ObjectMapperFactory() {
+
+                public ObjectMapper create(
+                    final Type arg0,
+                    final String arg1 )
+                {
+                    return objectMapper;
+                }
 
                 @Override
                 public ObjectMapper create(

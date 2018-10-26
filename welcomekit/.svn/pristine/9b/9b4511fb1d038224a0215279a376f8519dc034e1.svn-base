@@ -119,20 +119,6 @@ public class CustomerIntegrationTest
             .contentType( ContentType.JSON ).body( json ).when().put( "/customer/update" )
             .then().log().everything()
             .assertThat().statusCode( HttpStatus.SC_NOT_FOUND ).and()
-            .body( "message", Matchers.contains( "ID=500 not exists" ) );
-    }
-
-    @Test
-    public void shouldTrhowCustomerInvalidAccessExceptionWhenTryUpdateOtherCustomer()
-    {
-        final String token = sessionService.login( "update@teste.com.br", "update" );
-
-        final String json = "{\"id\":5 , \"email\":\"update@teste.com.br\" , \"name\":\"Update1\" , \"password\":\"update\"}";
-
-        given().header( "token", token )
-            .contentType( ContentType.JSON ).body( json ).when().put( "/customer/update" )
-            .then().log().everything()
-            .assertThat().statusCode( HttpStatus.SC_METHOD_NOT_ALLOWED ).and()
-            .body( "message", Matchers.equalTo( "You can only change your account." ) );
+            .body( "message", Matchers.equalTo( "ID=500 not exists" ) );
     }
 }

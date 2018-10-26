@@ -1,0 +1,83 @@
+package br.com.neolog.welcomekit.services;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import br.com.neolog.welcomekit.CartStatus;
+import br.com.neolog.welcomekit.CustomerLocal;
+import br.com.neolog.welcomekit.models.Cart;
+import br.com.neolog.welcomekit.models.CartItem;
+import br.com.neolog.welcomekit.models.Customer;
+import br.com.neolog.welcomekit.models.Product;
+import br.com.neolog.welcomekit.repository.CartItemRepository;
+import br.com.neolog.welcomekit.repository.CartRepository;
+
+@RunWith( MockitoJUnitRunner.class )
+public class CartServiceTest
+{
+    private static final Integer CUSTOMER_ID = 1;
+    private static final Integer CART_ID = 1;
+
+    @Spy
+    @InjectMocks
+    private CartService subject;
+
+    @Mock
+    private CartRepository repository;
+    @Mock
+    private CartItemRepository cartItemRepository;
+    @Mock
+    private Customer customer;
+    @Mock
+    private Cart cart;
+    @Mock
+    private CartItem cartItem1;
+    @Mock
+    private CartItem cartItem2;
+    @Mock
+    private Product product1;
+    @Mock
+    private Product product2;
+
+    @Before
+    public void setup()
+    {
+        CustomerLocal.setCurrentCustomerId( 1 );
+    }
+    
+    @After
+    public void tearDown(){
+        CustomerLocal.removeCurrentCustomerId();
+    }
+
+    @Test
+    public void shouldReturnSum()
+    {
+
+        when( repository.findByCustomerIdAndCartStatus( CUSTOMER_ID, CartStatus.ACTIVE ) ).thenReturn( cart );
+        when( cart.getId() ).thenReturn( CART_ID );
+        when( cartItemRepository.findAllByCartId( CART_ID ) ).thenReturn( Arrays.asList( cartItem1, cartItem2 ) );
+
+        when( cartItem1.getQuantity() ).thenReturn( 2 );
+        when( cartItem1.getProduct() ).thenReturn( product1 );
+        when( product1.getPrice() ).thenReturn( 10d );
+
+        when( cartItem2.getQuantity() ).thenReturn( 5 );
+        when( cartItem2.getProduct() ).thenReturn( product2 );
+        when( product2.getPrice() ).thenReturn( 50d );
+
+        assertThat( subject.getCurrentPrice() ).isEqualTo( 270d );
+
+    }
+}

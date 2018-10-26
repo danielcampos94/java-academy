@@ -28,7 +28,7 @@ public class ProductIntegrationTest
             .everything()
             .assertThat().statusCode( HttpStatus.SC_CREATED ).and().extract().response().as( Integer.class );
 
-        assertThat( productId ).isEqualTo( 8 );
+        assertThat( productId ).isEqualTo( 6 );
     }
 
     @Test
@@ -42,9 +42,9 @@ public class ProductIntegrationTest
     @Test
     public void shouldReturnStatusOkWhenGetProductByName()
     {
-        given().header( "token", "TOKENVALUE" ).contentType( ContentType.JSON ).when().get( "product/search/name/Carro" ).then().log()
+        given().header( "token", "TOKENVALUE" ).contentType( ContentType.JSON ).when().get( "product/search/name/Bola" ).then().log()
             .everything().assertThat()
-            .statusCode( HttpStatus.SC_OK ).and().body( "name", Matchers.equalTo( "Carro" ) );
+            .statusCode( HttpStatus.SC_OK ).and().body( "name", Matchers.equalTo( "Bola" ) );
     }
 
     @Test
@@ -65,7 +65,7 @@ public class ProductIntegrationTest
             .then().log().everything()
             .assertThat()
             .statusCode( HttpStatus.SC_NOT_FOUND ).and()
-            .body( "message", Matchers.contains( "CODE=260 not exists" ) );
+            .body( "message", Matchers.equalTo( "CODE=260 not exists" ) );
     }
 
     @Test
@@ -87,13 +87,13 @@ public class ProductIntegrationTest
     {
         final Integer deletedProductId = given().header( "token", "TOKENVALUE" )
             .contentType( ContentType.JSON )
-            .when().delete( "/product/remove/7" )
+            .when().delete( "/product/remove/4" )
             .then().log().everything()
             .assertThat()
             .statusCode( HttpStatus.SC_OK ).and()
             .extract().response().as( Integer.class );
 
-        assertThat( deletedProductId ).isEqualTo( 7 );
+        assertThat( deletedProductId ).isEqualTo( 4 );
 
     }
 
@@ -105,7 +105,7 @@ public class ProductIntegrationTest
             .then().log().everything()
             .assertThat()
             .statusCode( HttpStatus.SC_NOT_FOUND ).and()
-            .body( "message", Matchers.contains( "This product not exists" ) );
+            .body( "message", Matchers.equalTo( "This product not exists" ) );
     }
 
     @Test

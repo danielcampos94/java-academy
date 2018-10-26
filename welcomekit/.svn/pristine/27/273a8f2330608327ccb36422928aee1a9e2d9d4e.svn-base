@@ -119,7 +119,7 @@ public class CustomerIntegrationTest
             .contentType( ContentType.JSON ).body( json ).when().put( "/customer/update" )
             .then().log().everything()
             .assertThat().statusCode( HttpStatus.SC_NOT_FOUND ).and()
-            .body( "message", Matchers.contains( "ID=500 not exists" ) );
+            .body( "message", Matchers.equalTo( "ID=500 not exists" ) );
     }
 
     @Test

@@ -16,7 +16,6 @@ import br.com.neolog.welcomekit.exceptions.ErrorResponse;
 import br.com.neolog.welcomekit.models.Cart;
 import br.com.neolog.welcomekit.models.CartItem;
 import br.com.neolog.welcomekit.services.CartService;
-import br.com.neolog.welcomekit.services.SessionService;
 import io.restassured.http.ContentType;
 
 public class CartIntegrationTest
@@ -25,9 +24,6 @@ public class CartIntegrationTest
 {
     @Autowired
     private CartService cartService;
-
-    @Autowired
-    private SessionService sessionService;
 
     @Test
     public void addItemShouldReturnStatusOKAndCreatedItemWhenAddNewItem()
@@ -94,7 +90,7 @@ public class CartIntegrationTest
             .assertThat().statusCode( HttpStatus.SC_OK ).extract().body().as( Double.class );
 
         assertThat( price ).isNotNull();
-        assertThat( price ).isEqualTo( 16220.0 );
+        assertThat( price ).isEqualTo( 16020.0 );
     }
 
     @Test
@@ -139,20 +135,6 @@ public class CartIntegrationTest
     }
 
     @Test
-    public void shouldThrowCartItemIllegalQuantityExceptionWhenSaveCartItemWithInvalidQuantity()
-    {
-        final String json = "{\"product\":{\"code\":10}, \"quantity\":99999, \"cart\":{\"customer\":{\"email\":\"cart@teste.com.br\"}}}";
-
-        final ErrorResponse response = given().header( "token", "TOKENVALUE" ).contentType( ContentType.JSON ).body( json )
-            .when().post( "/cart/add/item" )
-            .then().log()
-            .everything()
-            .assertThat().statusCode( HttpStatus.SC_METHOD_NOT_ALLOWED ).and().extract().response().as( ErrorResponse.class );
-
-        assertThat( response.getMessage() ).contains( "This quantity is greater than stock" );
-    }
-
-    @Test
     public void shouldThrowProductNotFoundExceptionWhenRemoveCartItemWithInvalidCodeProduct()
     {
         final ErrorResponse response = given().header( "token", "TOKENVALUE" ).contentType( ContentType.JSON )
@@ -162,59 +144,5 @@ public class CartIntegrationTest
             .assertThat().statusCode( HttpStatus.SC_NOT_FOUND ).and().extract().response().as( ErrorResponse.class );
 
         assertThat( response.getMessage() ).contains( "This product not exists" );
-    }
-
-    @Test
-    public void shouldCreateCartItemWhenCartItemByProductAndCartDoesNotExist()
-    {
-        final String json = "{\"product\":{\"code\":11}, \"quantity\":1, \"cart\":{\"customer\":{\"email\":\"update@teste.com.br\"}}}";
-
-        final CartItem item = given().header( "token", "CHECKOUTCART2" ).contentType( ContentType.JSON ).body( json )
-            .when().post( "/cart/add/item" )
-            .then().log()
-            .everything()
-            .assertThat().statusCode( HttpStatus.SC_OK ).and().extract().response().as( CartItem.class );
-
-        assertThat( item ).isNotNull();
-    }
-
-    @Test
-    public void shouldThrowProductNotFoundExceptionWhenRemoveQuantityCartItemWithInvalidCodeProduct()
-    {
-        final ErrorResponse response = given().header( "token", "TOKENVALUE" ).contentType( ContentType.JSON )
-            .when().put( "/cart/remove/item/code/quantity?productCode=50&quantity=3000" )
-            .then().log()
-            .everything()
-            .assertThat().statusCode( HttpStatus.SC_NOT_FOUND ).and().extract().response().as( ErrorResponse.class );
-
-        assertThat( response.getMessage() ).contains( "This product not exists" );
-    }
-
-    @Test
-    public void shouldCartItemIllegalQuantityExceptionWhenRemoveIllegalQuantityCartItemWithValidCodeProduct()
-    {
-        final ErrorResponse response = given().header( "token", "TOKENVALUE" ).contentType( ContentType.JSON )
-            .when().put( "/cart/remove/item/code/quantity?productCode=13&quantity=30000" )
-            .then().log()
-            .everything()
-            .assertThat().statusCode( HttpStatus.SC_METHOD_NOT_ALLOWED ).and().extract().response().as( ErrorResponse.class );
-
-        assertThat( response.getMessage() ).contains( "This quantity is greater than quantity you have" );
-    }
-
-    @Test
-    public void addItemShouldReturnStatusOKAndCreatedItemWhenAddNewItemWithNewCart()
-    {
-        final String json = "{\"product\":{\"code\":11}, \"quantity\":1000, \"cart\":{\"customer\":{\"email\":\"session@teste.com.br\"}}}";
-
-        final String token = sessionService.login( "session@teste.com.br", "cart" );
-
-        final CartItem item = given().header( "token", token ).contentType( ContentType.JSON ).body( json )
-            .when().post( "/cart/add/item" )
-            .then().log()
-            .everything()
-            .assertThat().statusCode( HttpStatus.SC_OK ).and().extract().response().as( CartItem.class );
-
-        assertThat( item ).isNotNull();
     }
 }

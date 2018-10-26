@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.neolog.welcomekit.exceptions.customer.CustomerDuplicateEmailException;
+import br.com.neolog.welcomekit.exceptions.customer.CustomerInvalidAccessException;
 import br.com.neolog.welcomekit.exceptions.customer.CustomerNotFoundException;
 import br.com.neolog.welcomekit.models.Customer;
 import br.com.neolog.welcomekit.repository.CustomerRepository;
@@ -38,7 +39,7 @@ public class CustomerService
             throw new CustomerNotFoundException( "ID=" + customer.getId() + " not exists" );
         }
         if( customer.getId() != getCurrentCustomerId() ) {
-            throw new RuntimeException( "You can only change your account." );
+            throw new CustomerInvalidAccessException( "You can only change your account." );
         }
         return customerRepository.save( customer );
     }
@@ -57,9 +58,6 @@ public class CustomerService
     public Customer inactivate()
     {
         final Customer customer = customerRepository.findById( getCurrentCustomerId() );
-        if( customer == null ) {
-            throw new CustomerNotFoundException( "Not exists this active email" );
-        }
         customer.setInactive( true );
         return customerRepository.save( customer );
     }
