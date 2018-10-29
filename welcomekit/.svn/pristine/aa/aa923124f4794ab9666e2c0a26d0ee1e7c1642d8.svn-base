@@ -1,0 +1,130 @@
+package br.com.neolog.welcomekit;
+
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.apache.http.HttpStatus;
+import org.hamcrest.Matchers;
+import org.junit.Test;
+
+import br.com.neolog.welcomekit.models.Stock;
+import io.restassured.http.ContentType;
+
+public class StockIntegrationTest
+    extends
+        AbstractIntegrationTest
+{
+
+    @Test
+    public void shouldReturnStatusCreatedWhenSaveNewStock()
+    {
+        final String json = "{\"product\": {\"id\": 4}, \"quantity\": 5000}";
+
+        final Stock stock = given().header( "token", "TOKENVALUE" ).contentType( ContentType.JSON ).body( json ).when().post(
+            "/stock/save" ).then().log()
+            .everything()
+            .assertThat().statusCode( HttpStatus.SC_CREATED ).and().extract().response().as( Stock.class );
+
+        assertThat( stock.getProduct().getId() ).isEqualTo( 4 );
+        assertThat( stock.getQuantity() ).isEqualTo( 5000 );
+    }
+
+    @Test
+    public void shouldReturnStatusCreatedWhenSaveInExistStock()
+    {
+
+        final String json = "{\"product\": {\"id\": 4}, \"quantity\": 5000}";
+
+        final Stock stock = given().header( "token", "TOKENVALUE" ).contentType( ContentType.JSON ).body( json ).when().post(
+            "/stock/save" ).then().log()
+            .everything()
+            .assertThat().statusCode( HttpStatus.SC_CREATED ).and().extract().response().as( Stock.class );
+
+        assertThat( stock.getQuantity() ).isEqualTo( 10000 );
+    }
+
+    @Test
+    public void shouldThrowProductNotExistsExceptionWhenSaveStock()
+    {
+        final String json = "{\"product\": {\"id\": 38}, \"quantity\": 5000}";
+
+        given().header( "token", "TOKENVALUE" ).contentType( ContentType.JSON )
+            .body( json ).when().post( "/stock/save" )
+            .then().log().everything()
+            .assertThat()
+            .statusCode( HttpStatus.SC_NOT_FOUND )
+            .and().body( "message", Matchers.contains( "This product not exists" ) );
+    }
+
+    @Test
+    public void shouldReturnStatusOkAndVerifyIncreaseQuantityStock()
+    {
+        final Stock stock = given().header( "token", "TOKENVALUE" ).contentType( ContentType.JSON ).when().put( "/stock/increase/11/1000" )
+            .then().log().everything()
+            .assertThat().statusCode( HttpStatus.SC_OK ).and().extract().response().as( Stock.class );
+
+        assertThat( stock.getQuantity() ).isEqualTo( 9000 );
+    }
+
+    @Test
+    public void shouldReturnStatusOkAndVerifyDecreaseQuantityStock()
+    {
+        final Stock stock = given().header( "token", "TOKENVALUE" ).contentType( ContentType.JSON ).when().put( "/stock/decrease/11/1000" )
+            .then().log()
+            .everything()
+            .assertThat().statusCode( HttpStatus.SC_OK ).and().extract().response().as( Stock.class );
+
+        assertThat( stock.getQuantity() ).isEqualTo( 8000 );
+    }
+
+    @Test
+    public void shouldThrowProductNotExistsExceptionWhenDecreaseOrIncreaseNotExistsCodeProduct()
+    {
+        given().header( "token", "TOKENVALUE" ).contentType( ContentType.JSON ).when().put( "/stock/decrease/700/300" ).then().log()
+            .everything()
+            .assertThat().statusCode( HttpStatus.SC_NOT_FOUND ).and().body( "message", Matchers.contains(
+                "This product not exists" ) );
+    }
+
+    @Test
+    public void shouldReturnStatusOkAndNotNullWhenFindStockQuantityByCodeProduct()
+    {
+        final Integer totalQuantity = given().header( "token", "TOKENVALUE" ).contentType( ContentType.JSON )
+            .when().get( "/stock/search/quantity/code/11" )
+            .then().log().everything().assertThat()
+            .statusCode( HttpStatus.SC_OK )
+            .and().extract().response().as( Integer.class );
+
+        assertThat( totalQuantity ).isEqualTo( 8000 );
+    }
+
+    @Test
+    public void shouldReturnStatusOkAndYourIdWhenDeleteStock()
+    {
+        final Integer deletedProductCode = given()
+            .header( "token", "TOKENVALUE" )
+            .contentType( ContentType.JSON )
+            .when().delete( "/stock/remove/11" )
+            .then().log().everything()
+            .assertThat()
+            .statusCode( HttpStatus.SC_OK ).and()
+            .extract().response().as( Integer.class );
+
+        assertThat( deletedProductCode ).isEqualTo( 11 );
+
+    }
+
+    @Test
+    public void shouldThrowProductNotExistsExceptionWhenDeleteStock()
+    {
+        given().header( "token", "TOKENVALUE" )
+            .contentType( ContentType.JSON )
+            .when().delete( "/stock/remove/90" )
+            .then().log().everything()
+            .assertThat()
+            .statusCode( HttpStatus.SC_NOT_FOUND ).and()
+            .body( "message", Matchers.contains( "CODE_PRODUCT=90 not exists" ) );
+
+    }
+
+}
