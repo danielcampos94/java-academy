@@ -24,9 +24,7 @@ public class RestExceptionHandler
         final MethodArgumentNotValidException exception,
         final WebRequest request )
     {
-        final ErrorResponse errorResponse = new ErrorResponse( new Date(), bindingResultToString( exception ), HttpStatus.BAD_REQUEST
-            .value(),
-            HttpStatus.BAD_REQUEST );
+        final ErrorResponse errorResponse = new ErrorResponse( new Date(), bindingResultToString( exception ) );
         return new ResponseEntity<>( errorResponse, HttpStatus.BAD_REQUEST );
     }
 
@@ -35,9 +33,7 @@ public class RestExceptionHandler
         final CartItemIllegalQuantityException exception,
         final WebRequest request )
     {
-        final ErrorResponse errorResponse = new ErrorResponse( new Date(), exception.getItem(), HttpStatus.METHOD_NOT_ALLOWED
-            .value(),
-            HttpStatus.METHOD_NOT_ALLOWED );
+        final ErrorResponse errorResponse = new ErrorResponse( new Date(), exception.getItem() );
         return new ResponseEntity<>( errorResponse, HttpStatus.METHOD_NOT_ALLOWED );
     }
 
@@ -46,9 +42,7 @@ public class RestExceptionHandler
         final ProductNotFoundException exception,
         final WebRequest request )
     {
-        final ErrorResponse errorResponse = new ErrorResponse( new Date(), exception.getMessage(),
-            HttpStatus.NOT_FOUND.value(),
-            HttpStatus.NOT_FOUND );
+        final ErrorResponse errorResponse = new ErrorResponse( new Date(), exception.getMessage() );
         return new ResponseEntity<>( errorResponse, HttpStatus.NOT_FOUND );
     }
 
@@ -57,9 +51,7 @@ public class RestExceptionHandler
         final CustomerInvalidPasswordException exception,
         final WebRequest request )
     {
-        final ErrorResponse errorResponse = new ErrorResponse( new Date(), exception.getMessage(),
-            HttpStatus.BAD_REQUEST.value(),
-            HttpStatus.BAD_REQUEST );
+        final ErrorResponse errorResponse = new ErrorResponse( new Date(), exception.getMessage() );
         return new ResponseEntity<>( errorResponse, HttpStatus.BAD_REQUEST );
     }
 
@@ -68,9 +60,7 @@ public class RestExceptionHandler
         final CustomerNotFoundException exception,
         final WebRequest request )
     {
-        final ErrorResponse errorResponse = new ErrorResponse( new Date(), exception.getMessage(),
-            HttpStatus.NOT_FOUND.value(),
-            HttpStatus.NOT_FOUND );
+        final ErrorResponse errorResponse = new ErrorResponse( new Date(), exception.getMessage() );
         return new ResponseEntity<>( errorResponse, HttpStatus.NOT_FOUND );
     }
 

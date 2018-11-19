@@ -30,13 +30,13 @@ public class ProductService
         if( existsProductByCode( product.getCode() ) ) {
             throw new ProductDuplicateCodeException( "CODE=" + product.getCode() + " already exists" );
         }
-        if (product.getWeight()<0 ){
+        if( product.getWeight() < 0 ) {
             throw new IllegalWeightException( "This field must be greater than zero" );
         }
-        if (product.getPrice()<0 ){
+        if( product.getPrice() < 0 ) {
             throw new IllegalPriceException( "This field must be greater than zero" );
         }
-        
+
         return productRepository.save( product ).getId();
     }
 
@@ -71,13 +71,13 @@ public class ProductService
         if( ! productRepository.existsByCode( product.getCode() ) ) {
             throw new ProductNotFoundException( "CODE=" + product.getCode() + " not exists" );
         }
-        if (product.getWeight()<0 ){
+        if( product.getWeight() < 0 ) {
             throw new IllegalWeightException( "This field must be greater than zero" );
         }
-        if (product.getPrice()<0 ){
+        if( product.getPrice() < 0 ) {
             throw new IllegalPriceException( "This field must be greater than zero" );
         }
-        
+
         return productRepository.save( product );
     }
 

@@ -43,7 +43,7 @@ public class CartIntegrationTest
     @Test
     public void addItemShouldReturnStatusOKAndCreatedItemWhenAddNewItem()
     {
-        
+
         final CartItemHolder cartItemHolder = new CartItemHolder( 11, 1000 );
         final CartItem item = given().header( "token", "TOKENVALUE" ).contentType( ContentType.JSON ).body( cartItemHolder )
             .when().post( "/cart/add/item" )
@@ -113,7 +113,7 @@ public class CartIntegrationTest
             .assertThat().statusCode( HttpStatus.SC_OK ).extract().body().as( Double.class );
 
         assertThat( price ).isNotNull();
-        assertThat( price ).isEqualTo( 16220.0 );
+        assertThat( price ).isEqualTo( 16170.0 );
     }
 
     @Test
@@ -185,8 +185,8 @@ public class CartIntegrationTest
     @Test
     public void shouldCreateCartItemWhenCartItemByProductAndCartDoesNotExist()
     {
-        final CartItemHolder cartItemHolder = new CartItemHolder(11, 1);
-        
+        final CartItemHolder cartItemHolder = new CartItemHolder( 11, 1 );
+
         final CartItem item = given().header( "token", "CHECKOUTCART2" ).contentType( ContentType.JSON )
             .when().body( cartItemHolder )
             .post( "/cart/add/item" )
@@ -229,7 +229,7 @@ public class CartIntegrationTest
     {
 
         final String token = sessionService.login( "session@teste.com.br", "cart" );
-        final CartItemHolder cartItemHolder = new CartItemHolder(11, 1000);
+        final CartItemHolder cartItemHolder = new CartItemHolder( 11, 1000 );
         final CartItem item = given().header( "token", token ).contentType( ContentType.JSON ).body( cartItemHolder )
             .when().post( "/cart/add/item" )
             .then().log()

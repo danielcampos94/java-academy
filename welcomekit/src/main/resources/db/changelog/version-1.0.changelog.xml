@@ -48,7 +48,7 @@
 			<column name="name" type="varchar(30)">
 				<constraints nullable="false" />
 			</column>
-			<column name="price" type="double" />
+			<column name="price" type="bigint" />
 			<column name="description" type="varchar(100)">
 				<constraints nullable="true" />
 			</column>
@@ -128,7 +128,7 @@
 			<column name="id" valueSequenceNext="product_sequence" />
 			<column name="code" value="10" />
 			<column name="name" value="TV" />
-			<column name="price" value="2000.0" />
+			<column name="price" value="2000" />
 			<column name="description" value="SMART TV 4K" />
 			<column name="weight" value="30.0" />
 			<column name="category" value="1" />
@@ -137,8 +137,8 @@
 		<insert tableName="product">
 			<column name="id" valueSequenceNext="product_sequence" />
 			<column name="code" value="11" />
-			<column name="name" value="Celular" />
-			<column name="price" value="4000.0" />
+			<column name="name" value="Celular1" />
+			<column name="price" value="4000" />
 			<column name="description" value="IphoneX" />
 			<column name="weight" value="0.8" />
 			<column name="category" value="1" />
@@ -147,8 +147,8 @@
 		<insert tableName="product">
 			<column name="id" valueSequenceNext="product_sequence" />
 			<column name="code" value="12" />
-			<column name="name" value="Celular" />
-			<column name="price" value="4000.0" />
+			<column name="name" value="Celular2" />
+			<column name="price" value="4000" />
 			<column name="description" value="IphoneX" />
 			<column name="weight" value="0.8" />
 			<column name="category" value="1" />
@@ -157,8 +157,8 @@
 		<insert tableName="product">
 			<column name="id" valueSequenceNext="product_sequence" />
 			<column name="code" value="13" />
-			<column name="name" value="Celular" />
-			<column name="price" value="4000.0" />
+			<column name="name" value="Celular3" />
+			<column name="price" value="3000" />
 			<column name="description" value="IphoneX" />
 			<column name="weight" value="0.8" />
 			<column name="category" value="1" />
@@ -168,7 +168,7 @@
 			<column name="id" valueSequenceNext="product_sequence" />
 			<column name="code" value="14" />
 			<column name="name" value="Bola" />
-			<column name="price" value="50.0" />
+			<column name="price" value="5000" />
 			<column name="description" value="Bola redonda" />
 			<column name="weight" value="1.0" />
 			<column name="category" value="3" />
@@ -177,7 +177,7 @@
 			<column name="id" valueSequenceNext="product_sequence" />
 			<column name="code" value="15" />
 			<column name="name" value="Carro" />
-			<column name="price" value="50.0" />
+			<column name="price" value="5000" />
 			<column name="description" value="Bola redonda" />
 			<column name="weight" value="1.0" />
 			<column name="category" value="2" />
@@ -185,9 +185,9 @@
 		<insert tableName="product">
 			<column name="id" valueSequenceNext="product_sequence" />
 			<column name="code" value="16" />
-			<column name="name" value="Bola" />
-			<column name="price" value="50.0" />
-			<column name="description" value="Bola redonda" />
+			<column name="name" value="Cadeira" />
+			<column name="price" value="6000" />
+			<column name="description" value="" />
 			<column name="weight" value="1.0" />
 			<column name="category" value="3" />
 		</insert>

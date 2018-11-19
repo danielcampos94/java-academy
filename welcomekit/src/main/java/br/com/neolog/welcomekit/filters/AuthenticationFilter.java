@@ -28,6 +28,7 @@ import br.com.neolog.welcomekit.repository.SessionRepository;
     "/customer/inactivate",
     "/product/*",
     "/category/*",
+    "/recommendation-cart/*",
     "/stock/*"
 } )
 public class AuthenticationFilter

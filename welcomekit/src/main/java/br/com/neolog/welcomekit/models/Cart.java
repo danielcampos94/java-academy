@@ -36,7 +36,7 @@ public class Cart
     private double totalValue;
 
     @NotNull( message = "this field is not null" )
-    @Enumerated(EnumType.STRING)
+    @Enumerated( EnumType.STRING )
     private CartStatus cartStatus;
 
     public Cart()

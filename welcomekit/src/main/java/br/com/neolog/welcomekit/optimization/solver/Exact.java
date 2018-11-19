@@ -1,0 +1,97 @@
+package br.com.neolog.welcomekit.optimization.solver;
+
+import static br.com.neolog.welcomekit.optimization.PowerSet.combine;
+import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.common.collect.Multisets.toMultiset;
+import static java.util.Objects.requireNonNull;
+import static java.util.function.Function.identity;
+
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableList;
+
+import br.com.neolog.welcomekit.optimization.Item;
+import br.com.neolog.welcomekit.optimization.problem.Problem;
+import br.com.neolog.welcomekit.optimization.solution.Solution;
+
+@Component
+final class Exact
+    implements
+        Solver
+{
+    @Override
+    public Solution optimize(
+        final Problem problem )
+    {
+        requireNonNull( problem );
+
+        if( problem.getItems().isEmpty() ) {
+            return Solution.empty();
+        }
+
+        final Solution bestSolution = getBestSolution( problem.getTargetValue(), problem.getItems() );
+        return Solution.create( join( bestSolution.getSolutionItems() ) );
+    }
+
+    private static Solution getBestSolution(
+        final long target,
+        final List<Item> items )
+    {
+        Solution bestSolution = Solution.empty();
+        for( final Set<Item> combination : combine( split( items ) ) ) {
+            final Solution candidate = Solution.create( combination );
+            if( candidate.isFeasible( target ) && candidate.holdsMoreValue( bestSolution ) ) {
+                bestSolution = candidate;
+                if( bestSolution.getValueSum() == target ) {
+                    break;
+                }
+            }
+        }
+        return bestSolution;
+    }
+
+    /**
+     * Retorna uma nova lista que, para cada {@link Item} com quantidade Q são
+     * criados Q instâncias de um item com mesmas características, porém
+     * quantidade 1.
+     *
+     * @see #join(List) para realizar o processo contrário
+     * @throws NullPointerException caso problemItems sera <code>null</code> ou
+     *         contenha elemento <code>null</code>
+     */
+    private static List<Item> split(
+        final List<Item> problemItems )
+    {
+        final ImmutableList.Builder<Item> builder = ImmutableList.builder();
+        for( final Item problemItem : problemItems ) {
+            for( int i = 0; i < problemItem.getQuantity(); i++ ) {
+                builder.add( Item.create( problemItem.getProductCode(), problemItem.getPrice(), 1 ) );
+            }
+        }
+        return builder.build();
+    }
+
+    /**
+     * Retorna uma nova lista que combina instâncias diferentes de {@link Item}s
+     * com mesmo <code>productCode</code>, somando suas quantidades.
+     * 
+     * @throws NullPointerException caso <code>itemsToJoin</code> seja ou
+     *         contenha elemento <code>null</code>
+     */
+    private static List<Item> join(
+        final List<Item> itemsToJoin )
+    {
+        return itemsToJoin.stream().map( Item.productCodeEquivalence::wrap )
+            .collect( toMultiset( identity(), wrapper -> wrapper.get().getQuantity(), HashMultiset::create ) )
+            .entrySet().stream()
+            .map( entry -> {
+                final Item item = entry.getElement().get();
+                return Item.create( item.getProductCode(), item.getPrice(), entry.getCount() );
+            } )
+            .collect( toImmutableList() );
+    }
+}

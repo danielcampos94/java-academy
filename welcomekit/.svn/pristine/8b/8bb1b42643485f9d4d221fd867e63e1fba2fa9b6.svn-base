@@ -1,0 +1,31 @@
+package br.com.neolog.welcomekit.optimization.problem;
+
+import java.util.List;
+
+public class Problem
+{
+    private long targetValue;
+    private List<ProblemItem> listCombination;
+
+    public Problem()
+    {
+    }
+
+    public Problem(
+        final List<ProblemItem> listCombination,
+        final long targetValue )
+    {
+        this.listCombination = listCombination;
+        this.targetValue = targetValue;
+    }
+
+    public List<ProblemItem> getListCombination()
+    {
+        return listCombination;
+    }
+
+    public long getTargetValue()
+    {
+        return targetValue;
+    }
+}

@@ -1,0 +1,29 @@
+package br.com.neolog.welcomekit.optimization.solution;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import br.com.neolog.welcomekit.optimization.problem.ProblemItem;
+import br.com.neolog.welcomekit.repository.ProductRepository;
+
+@Component
+public class SolutionFactory
+{
+    @Autowired
+    private ProductRepository productRepository;
+
+    public Solution getSolution(
+        final List<ProblemItem> problemItems )
+    {
+        final List<SolutionItem> solutionItems = new ArrayList<>();
+        for( final ProblemItem problemItem : problemItems ) {
+            final String nameProduct = productRepository.findByCode( problemItem.getProductCode() ).getName();
+            final long price = Double.valueOf( problemItem.getPrice() ).longValue();
+            solutionItems.add( new SolutionItem( nameProduct, problemItem.getProductCode(), problemItem.getQuantity(), price ) );
+        }
+        return new Solution( solutionItems );
+    }
+}

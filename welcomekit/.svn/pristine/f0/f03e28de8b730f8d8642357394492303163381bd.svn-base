@@ -1,0 +1,26 @@
+package br.com.neolog.welcomekit.optimization.solution;
+
+import java.util.List;
+
+public class Solution
+{
+    private List<SolutionItem> solutionItens;
+    private long targetValue = 0;
+
+    public Solution(
+        final List<SolutionItem> list )
+    {
+        solutionItens.addAll( list );
+        targetValue = solutionItens.stream().mapToLong( item -> item.getPrice() * item.getQuantity() ).sum();
+    }
+
+    public List<SolutionItem> getSolutionItens()
+    {
+        return solutionItens;
+    }
+
+    public long getTargetValue()
+    {
+        return targetValue;
+    }
+}

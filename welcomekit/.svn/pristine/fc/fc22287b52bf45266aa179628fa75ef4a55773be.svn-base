@@ -1,0 +1,47 @@
+package br.com.neolog.welcomekit.optimization.solution;
+
+public class SolutionItem
+{
+    private String name;
+    private int code;
+    private int quantity;
+    private long price;
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public int getCode()
+    {
+        return code;
+    }
+
+    public int getQuantity()
+    {
+        return quantity;
+    }
+
+    public long getPrice()
+    {
+        return price / 100;
+    }
+
+    public SolutionItem()
+    {
+
+    }
+
+    public SolutionItem(
+        final String name,
+        final int code,
+        final int quantity,
+        final long price )
+    {
+        super();
+        this.name = name;
+        this.code = code;
+        this.quantity = quantity;
+        this.price = Math.round( price * 10 * 10 );
+    }
+}

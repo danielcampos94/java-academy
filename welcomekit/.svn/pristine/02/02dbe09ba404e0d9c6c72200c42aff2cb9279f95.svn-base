@@ -1,0 +1,10 @@
+package br.com.neolog.welcomekit.optimization;
+
+import br.com.neolog.welcomekit.optimization.problem.Problem;
+import br.com.neolog.welcomekit.optimization.solution.Solution;
+
+public interface Optimizable
+{
+    Solution optimize(
+        final Problem problem );
+}

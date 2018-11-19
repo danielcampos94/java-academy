@@ -1,0 +1,51 @@
+package br.com.neolog.welcomekit.optimization;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import br.com.neolog.welcomekit.optimization.problem.Problem;
+import br.com.neolog.welcomekit.optimization.problem.ProblemItem;
+import br.com.neolog.welcomekit.optimization.solution.Solution;
+import br.com.neolog.welcomekit.optimization.solution.SolutionFactory;
+
+@Component
+public class Heuristic
+    implements
+        Optimizable
+{
+    @Autowired
+    private SolutionFactory solutionFactory;
+
+    @Override
+    public Solution optimize(
+        final Problem problem )
+    {
+        final Solution solution = solutionFactory.getSolution( problem.getListCombination() );
+        if( solution.getTargetValue() <= problem.getTargetValue() ) {
+            return solution;
+        }
+
+        final List<ProblemItem> bestCombinationItems = new ArrayList<>();
+        long bestPrice = 0;
+        long newPrice = 0;
+
+        for( final ProblemItem problemItem : problem.getListCombination() ) {
+            final long longPrice = problemItem.getPrice();
+            newPrice = problem.getTargetValue() - bestPrice;
+            final int quantity = Long.valueOf( newPrice / longPrice ).intValue();
+            bestPrice += ( quantity * longPrice );
+
+            if( quantity < 1 ) {
+                continue;
+            }
+            if( bestPrice <= problem.getTargetValue() && quantity <= problemItem.getQuantity() ) {
+                bestCombinationItems.add( new ProblemItem( problemItem.getProductCode(), longPrice, quantity ) );
+            }
+        }
+        return solutionFactory.getSolution( bestCombinationItems );
+    }
+
+}

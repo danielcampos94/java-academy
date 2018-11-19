@@ -1,0 +1,50 @@
+package br.com.neolog.welcomekit.optimization.problem;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import br.com.neolog.welcomekit.exceptions.stock.StockQuantityEmptyException;
+import br.com.neolog.welcomekit.models.Stock;
+import br.com.neolog.welcomekit.repository.StockRepository;
+
+@Component
+public class ProblemFactory
+{
+    @Autowired
+    private StockRepository stockRepository;
+
+    public Problem getProblem(
+        final long targetValue )
+    {
+        final List<Stock> stockItens = stockRepository.findByProductPriceLessThanEqualOrderByProductPriceDesc( targetValue );
+
+        if( stockItens.isEmpty() ) {
+            throw new StockQuantityEmptyException( "Stock Empty" );
+        }
+
+        final List<ProblemItem> problemItens = new ArrayList<>();
+
+        for( final Stock stock : stockItens ) {
+            final int stockQuantity = stock.getQuantity();
+            if( stockQuantity < 1 ) {
+                continue;
+            }
+            final long longPrice = Math.round( stock.getProduct().getPrice() * 10 * 10 );
+            if( targetValue >= longPrice ) {
+
+                final int quantity = Long.valueOf( targetValue / longPrice ).intValue();
+                final int code = stock.getProduct().getCode();
+
+                if( quantity <= stockQuantity ) {
+                    problemItens.add( new ProblemItem( code, longPrice, quantity ) );
+                } else {
+                    problemItens.add( new ProblemItem( code, longPrice, stockQuantity ) );
+                }
+            }
+        }
+        return new Problem( problemItens, targetValue );
+    }
+}

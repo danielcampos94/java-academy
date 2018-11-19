@@ -1,0 +1,33 @@
+package br.com.neolog.welcomekit.optimization.problem;
+
+public class ProblemItem
+{
+    private final int productCode;
+    private final long price;
+    private final int quantity;
+
+    public int getProductCode()
+    {
+        return productCode;
+    }
+
+    public double getPrice()
+    {
+        return price / 100;
+    }
+
+    public int getQuantity()
+    {
+        return quantity;
+    }
+
+    public ProblemItem(
+        final int productCode,
+        final long price,
+        final int quantity )
+    {
+        this.productCode = productCode;
+        this.price = Math.round( price * 10 * 10 );
+        this.quantity = quantity;
+    }
+}

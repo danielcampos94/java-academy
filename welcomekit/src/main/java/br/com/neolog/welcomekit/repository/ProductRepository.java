@@ -28,7 +28,5 @@ public interface ProductRepository
 
     boolean existsByCategoryCode(
         final int code );
-    
-    
 
 }

@@ -1,5 +1,7 @@
 package br.com.neolog.welcomekit.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import br.com.neolog.welcomekit.models.Product;
@@ -21,4 +23,7 @@ public interface StockRepository
 
     Stock findByProductCode(
         final int codeProduct );
+
+    List<Stock> findByProductPriceLessThanEqualOrderByProductPriceDesc(
+        final long price );
 }
