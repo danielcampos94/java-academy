@@ -17,7 +17,7 @@ public class ProblemFactory
     @Autowired
     private StockRepository stockRepository;
 
-    public ProblemImpl getProblem(
+    public Problem getProblem(
         final long targetValue )
     {
         final List<Stock> stockItems = stockRepository.findByProductPriceLessThanEqualOrderByProductPriceDesc( targetValue );
@@ -26,7 +26,7 @@ public class ProblemFactory
             throw new StockQuantityEmptyException( "Stock Empty" );
         }
 
-        final List<Item> problemItens = new LinkedList<>();
+        final List<Item> problemItems = new LinkedList<>();
 
         for( final Stock stock : stockItems ) {
             final int stockQuantity = stock.getQuantity();
@@ -34,18 +34,13 @@ public class ProblemFactory
                 continue;
             }
             final long longPrice = Math.round( stock.getProduct().getPrice() * 10 * 10 );
-            if( targetValue >= longPrice ) {
 
-                final int quantity = Long.valueOf( targetValue / longPrice ).intValue();
-                final int code = stock.getProduct().getCode();
+            final int quantity = Long.valueOf( targetValue / longPrice ).intValue();
+            final int code = stock.getProduct().getCode();
 
-                if( quantity <= stockQuantity ) {
-                    problemItens.add( Item.create( code, longPrice, quantity ) );
-                } else {
-                    problemItens.add( Item.create( code, longPrice, stockQuantity ) );
-                }
-            }
+            final int possibleQuantity = Math.min( stockQuantity, quantity );
+            problemItems.add( Item.create( code, longPrice, possibleQuantity ) );
         }
-        return ProblemImpl.create( problemItens, targetValue );
+        return ProblemImpl.create( problemItems, targetValue );
     }
 }

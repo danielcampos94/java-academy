@@ -15,7 +15,6 @@ final class Route
         Solver
 {
     private final Solver heuristic;
-
     private final Solver exact;
 
     @Autowired

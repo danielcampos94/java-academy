@@ -11,13 +11,13 @@ import br.com.neolog.welcomekit.optimization.recommendation.Recommendation;
 import br.com.neolog.welcomekit.services.OptimizationService;
 
 @RestController
-@RequestMapping( value = "/recommendation-cart", produces = MediaType.APPLICATION_JSON_VALUE )
+@RequestMapping( value = "/recommendation", produces = MediaType.APPLICATION_JSON_VALUE )
 public class OptimizationController
 {
     @Autowired
     private OptimizationService optimizationService;
 
-    @GetMapping( )
+    @GetMapping
     public Recommendation getResult(
         @RequestParam( "target" ) final long target )
     {

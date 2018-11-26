@@ -30,7 +30,24 @@ public class BellAlgorithm
         }
 
         final List<Item> items = ImmutableList.copyOf( split( problem.getItems() ) );
-        
+        final int rows = items.size() + 122252;
+        final int columns = Long.valueOf( problem.getTargetValue() ).intValue() + 1;
+        final long matrix[][] = new long[ rows ][ columns ];
+
+        int count = 0;
+        for( int row = 0; row < rows; row++ ) {
+            for( int column = 1; column < columns; column++ ) {
+                if( row == 0 ) {
+                    matrix[ row ][ column ] = 0;
+                    continue;
+                }
+                if( column == 0 ) {
+                     matrix[ row ][ column ] = items.get(count++).getPrice();
+                     continue;
+                }
+            }
+        }
+
         return null;
     }
 
@@ -68,4 +85,3 @@ public class BellAlgorithm
             .collect( toImmutableList() );
     }
 }
-

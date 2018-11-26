@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.neolog.welcomekit.optimization.problem.ProblemImpl;
+import br.com.neolog.welcomekit.optimization.problem.Problem;
 import br.com.neolog.welcomekit.optimization.problem.ProblemFactory;
 import br.com.neolog.welcomekit.optimization.recommendation.Recommendation;
 import br.com.neolog.welcomekit.optimization.recommendation.RecommendationItem;
@@ -26,7 +26,7 @@ public class OptimizationService
     public Recommendation getRecommendation(
         final long targetValue )
     {
-        final ProblemImpl problem = problemFactory.getProblem( targetValue );
+        final Problem problem = problemFactory.getProblem( targetValue );
         final Solution optimizedSolution = solver.optimize( problem );
         final List<RecommendationItem> recommendations = solutionConverter.toRecommendation( optimizedSolution );
         return new Recommendation( recommendations );
